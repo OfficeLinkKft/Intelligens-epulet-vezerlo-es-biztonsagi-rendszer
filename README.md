@@ -9,3 +9,4 @@ Főbb modulok:
 ## Rendszám felismerő rendszer
 ## Log elemző rendszer
 
+
