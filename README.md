@@ -9,6 +9,9 @@ Főbb modulok:
 ## Rendszám felismerő rendszer
 ## Log elemzés
 A log elemzés több Jupyter notebookban történik.
+A logok havi bontásban csv állományokban találhatóak. A logok előfeldolgozással egy állományba kerültek.
+
+
  
 
 
