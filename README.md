@@ -7,6 +7,8 @@ Főbb modulok:
 ## Felügyeleti rendszer
 ## Arcfelismerő rendszer
 ## Rendszám felismerő rendszer
-## Log elemző rendszer
+## Log elemzés
+A log elemzés több Jupyter notebookban történik.
+ 
 
 
