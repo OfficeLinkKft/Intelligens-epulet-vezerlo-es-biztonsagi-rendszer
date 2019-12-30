@@ -1,5 +1,4 @@
-# Intelligens-epulet-vezerlo-es-biztonsagi-rendszer
-Intelligens épület vezérlő és biztonsági rendszer
+# Intelligens épület vezérlő és biztonsági rendszer
 
 ## Célok megfogalmazása
 Célunk olyan épület vezérlőközpont és hozzá tartozóan olyan telepítési és üzemeltetési megoldás fejlesztése, amely gyors elterjedést tesz lehetővé.
