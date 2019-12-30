@@ -1,0 +1,991 @@
+progname nappali		//nappali ter eszkozeinek vezerlese
+
+//	a nap statuszanak megallapitasa
+//		program inditaskor es naponta ejfelkor
+//		ma es holnap / munkanap vagy hetvege
+
+//	statusz megallapitasa
+//		idopontok szerint percenkent
+//		gombok szerint masodpercenkent
+
+//	adott statuszhoz tartozo muveletek
+
+//	eszkozok definialasa
+//		vilagitas
+//		multimedia
+//		futes
+
+
+variables
+	//eszkozok
+
+	//napok es statuszaik 
+		int today		//mai nap statusza	
+		int tomorrow		//holnap nap statusza
+
+	//statuszok es idopontok
+		//astatus - nappali statusza
+		int astatus g s		//aktualis statusz, alapallapot tavol
+
+		//stop	0 	vezerles all	
+		
+		//out	1	tavol
+		//piros
+						
+		//athome2	itthon
+		//zöld
+
+		//awake	3	ebred
+		//sárga
+		int rhour_3awake=24		//mai ebresztes ido oraja, 24=nincs
+		int rminut_3awake=0		//perce
+		int rhour_3awake_weekend=24	//hetvegi ebreszto oraja, 24=nincs
+		int rminut_3awake_weekend=0	//perce	
+
+		//active4	aktiv
+						
+		//sleep	10	alszik
+		//kék
+		int rhour_10sleep=24		//alvas ora, 24=nincs
+		int rminut_10sleep=0		//perc
+		int rhour_10sleep_weekend=24	//hetvegi alvas oraja, 24=nincs
+		int rminut_10sleep_weekend=0	//perce
+
+		//astatus_konyha - konyha statusza
+		int astatus_konyha g s		//aktualis statusz, alapallapot tavol
+
+		//stop	0 	vezerles all
+		
+		//out	1	tavol
+		//piros
+						
+		//athome2	itthon
+		//zöld
+		
+		//awake	3	ebred
+		//sárga
+		
+		//eat	6	eszik
+		//fehér
+		
+		//cook	7	foz
+						
+		//dishup8	talal
+
+		//sleep	10	alszik
+                //kék
+
+		
+//statuszokhoz tartozo vezerlesi ertekek
+
+	//port.oli_nappali_lampa			altalanos vilagítas
+	//port.ili_nappali_lampa			visszaolvasas
+		//astatus
+		int rli_nappali_lampa_1=0		//statuszokhoz tartozo vilagitasi ertekek, tavol
+		int rli_nappali_lampa_2=40		//itthon
+		int rli_nappali_lampa_3=40		//ebreszto
+		int rli_nappali_lampa_4=70		//aktiv
+		int rli_nappali_lampa_10=0		//alszik
+
+	//port.oli_nappali_reflektor			reflektor
+	//port.ili_nappali_reflektor			visszaolvasas
+		//astatus
+		int rli_nappali_reflektor_1=0		//statuszokhoz tartozó vilagítasi értékek, tavol
+		int rli_nappali_reflektor_2=0		//itthon
+		int rli_nappali_reflektor_3=0		//ébresztõ
+		int rli_nappali_reflektor_4=70		//aktív
+		int rli_nappali_reflektor_10=0		//alszik
+
+	//port.oli_nappali_zoldlampa			zöld vilagítas
+	//port.ili_nappali_zoldlampa			visszaolvasas
+		//astatus
+		int rli_nappali_zoldlampa_1=0		//statuszokhoz tartozó vilagítasi értékek, tavol
+		int rli_nappali_zoldlampa_2=0		//itthon
+		int rli_nappali_zoldlampa_3=0		//ébresztõ
+		int rli_nappali_zoldlampa_4=80		//atív
+		int rli_nappali_zoldlampa_10=0		//alszik
+
+	//port.isw_nappali_zoldlampa2			zöld vilagítas nyomógomb, zsinóros, asztal felett
+	//port.oli_nappali_zoldlampa2			zöld vilagítas 2
+	//port.ili_nappali_zoldlampa2			visszaolvasas
+		//astatus
+		int rli_nappali_zoldlampa2_1=0		//statuszokhoz tartozó vilagítasi értékek, tavol
+		int rli_nappali_zoldlampa2_2=0		//itthon
+		int rli_nappali_zoldlampa2_3=0		//ébresztõ
+		int rli_nappali_zoldlampa2_4=80		//aktív
+		int rli_nappali_zoldlampa2_10=0		//alszik
+
+	//port.iswk_nappali_zoldkonnektor		allatkert gomb, a mennyzetrõl lóg szintén
+	//port.oso_nappali_zoldkonnektor		zöld konnektor
+	//port.iso_nappali_zoldkonnektor		visszaolvasas
+		//astatus
+		int rso_nappali_zoldkonnektor_1=0	//statuszokhoz tartozó vilagítasi értékek, tavol
+		int rso_nappali_zoldkonnektor_2		//itthon
+		int rso_nappali_zoldkonnektor_3		//ébresztõ
+		int rso_nappali_zoldkonnektor_4		//aktív
+		int rso_nappali_zoldkonnektor_10=0	//alszik
+
+	//port.isw_nappali_eloterlampa			elõtér vilagítas nyomógombok
+	//port.oli_nappali_eloterlampa			elõtér lampa
+	//port.ili_nappali_eloterlampa			visszaolvas
+		//astatus
+		int rli_nappali_eloterlampa_1=0		//statuszokhoz tartozó vilagítasi értékek, tavol
+		int rli_nappali_eloterlampa_2=0		//itthon
+		int rli_nappali_eloterlampa_3		//ébresztõ
+		int rli_nappali_eloterlampa_4		//aktív
+		int rli_nappali_eloterlampa_10=0	//alszik
+
+	//port.oli_nappali_etkezoasztallampa		konyha asztal vilagítas
+	//port.ili_nappali_etkezoasztallampa		visszaolvasas
+		//astatus_konyha
+		int rli_nappali_etkezoasztallampa_1=0	//statuszokhoz tartozó vilagítasi értékek, tavol
+		int rli_nappali_etkezoasztallampa_2=10	//itthon
+		int rli_nappali_etkezoasztallampa_3=80	//ébresztõ
+		int rli_nappali_etkezoasztallampa_6=80	//eszik
+		int rli_nappali_etkezoasztallampa_7=60	//fõz
+		int rli_nappali_etkezoasztallampa_8=60	//talal
+		int rli_nappali_etkezoasztallampa_10=0	//alszik
+
+	//port.oli_nappali_konyhapultlampa		konyhapult vilagítas, asztal, kék lampak
+	//port.ili_nappali_konyhapultlampa		visszaolvasas
+		//astatus_konyha
+		int rli_nappali_konyhapultlampa_1=0	//statuszokhoz tartozó vilagítasi értékek, tavol
+		int rli_nappali_konyhapultlampa_2=0	//itthon
+		int rli_nappali_konyhapultlampa_3=40	//ébresztõ
+		int rli_nappali_konyhapultlampa_6=40	//eszik
+		int rli_nappali_konyhapultlampa_7=70	//fõz
+		int rli_nappali_konyhapultlampa_8=70	//talal
+		int rli_nappali_konyhapultlampa_10=0	//alszik
+
+	//port.oli_nappali_fozolampa			konyhapult vilagítas, sütõ
+	//port.ili_nappali_fozolampa			visszaolvasas
+		//astatus_konyha
+		int rli_nappali_fozolampa_1=0		//statuszokhoz tartozó vilagítasi értékek, tavol
+		int rli_nappali_fozolampa_2=0		//itthon
+		int rli_nappali_fozolampa_3=80		//ébresztõ
+		int rli_nappali_fozolampa_6=80		//eszik
+		int rli_nappali_fozolampa_7=80		//fõz
+		int rli_nappali_fozolampa_8=80		//talal
+		int rli_nappali_fozolampa_10=0		//alszik
+
+	//port.oli_nappali_talalolampa			talalóeszköz szekrény
+	//port.ili_nappali_talalolampa			visszaolvasas
+		//astatus_konyha
+		int rli_nappali_talalolampa_1=0		//statuszokhoz tartozó vilagítasi értékek, tavol
+		int rli_nappali_talalolampa_2=0		//itthon
+		int rli_nappali_talalolampa_3=40	//ébresztõ
+		int rli_nappali_talalolampa_6=40	//eszik
+		int rli_nappali_talalolampa_7=70	//fõz
+		int rli_nappali_talalolampa_8=70	//talal
+		int rli_nappali_talalolampa_10=0	//alszik
+
+	//port.ove_nappali_fozo				konyha ventilator
+	//port.ive_nappali_fozo				visszaolvasas
+		//astatus_konyha
+		int rve_nappali_fozo_1=0		//statuszokhoz tartozó ventillator értékek, tavol
+		int rve_nappali_fozo_2=0		//itthon
+		int rve_nappali_fozo_3=0		//ébresztõ
+		int rve_nappali_fozo_6=0		//eszik
+		int rve_nappali_fozo_7=70		//fõz
+		int rve_nappali_fozo_8=50		//talal
+		int rve_nappali_fozo_10=0		//alszik
+
+	//port.oli_nappali_kamralampa			kamra vilagítas
+	//port.ili_nappali_kamralampa			visszaolvasas
+	//port.isw_nappali_kamralampa			kamra vilagítas nyomógomb
+	//port.ico_nappali_kamraajto			kamra ajtó nyitas
+		//astatus_konyha
+		int rli_nappali_kamralampa_1=0		//statuszokhoz tartozó vilagítasi értékek, tavol
+		int rli_nappali_kamralampa_2		//itthon
+		int rli_nappali_kamralampa_3		//ébresztõ
+		int rli_nappali_kamralampa_6		//eszik
+		int rli_nappali_kamralampa_7		//fõz
+		int rli_nappali_kamralampa_8		//talal
+		int rli_nappali_kamralampa_10=0		//alszik
+
+	//port.ova_nappali				nappali fûtésszelep
+	//port.iva_nappali				visszaolvasas
+		//astatus
+		int rva_nappali_1			//statuszokhoz tartozó fûtésszelep értékek, tavol
+		int rva_nappali_2			//itthon
+		int rva_nappali_3			//ébresztõ
+		int rva_nappali_4			//aktív
+		int rva_nappali_10			//alszik
+							
+	//port.osw_nappali_hifi				nappali hifi ki/be
+	//port.isw_nappali_hifi				nappali hifi ki/be allapot
+		int rsw_nappali_hifi_1			//statuszokhoz tartozó hifi bekapcsolas értékek, tavol
+		int rsw_nappali_hifi_2			//itthon
+		int rsw_nappali_hifi_3			//ébresztõ
+		int rsw_nappali_hifi_4			//aktív
+		int rsw_nappali_hifi_10			//alszik
+
+
+//kozvetlen vezerlesi ertekek
+
+	//port.oli_nappali_kamralampa			kamra világítás
+	int rli_nappali_kamralampa=70			//kért érték
+
+	//port.oli_nappali_zoldlampa2			zöld világítás 2			
+	int rli_nappali_zoldlampa2=80			//kért érték
+
+	//port.oso_nappali_zoldkonnektor		zöld konnektor				
+	int rso_nappali_zoldkonnektor=70		//kért érték
+
+	//port.oli_nappali_eloterlampa			elõtér lámpa			
+	int rli_nappali_eloterlampa=80			//kért érték
+
+
+
+//atmenet idotartama percben statuszok kozott
+		int delay=5
+
+//segedvaltozok
+	int c1=0		//segedvaltozo, inditaskor 0, aztan 1
+
+	int a1			//statusz segedvaltozo
+	int a2			//statusz segedvaltozo
+	int a3			//statusz segedvaltozo
+	int a4			//statusz segedvaltozo
+	int a5			//statusz segedvaltozo
+	int a6			//statusz segedvaltozo
+	
+	str s1			//szoveg segedvaltozo homerseklet kiirasara KIJMK-re
+	str s11
+	str s12
+
+	str s2
+	str s21
+	str s22
+
+
+endvariables
+
+defines
+	//eszkozok
+
+
+	//napok statuszai
+		workday=1		//munkanap
+		redday=0		//unnepnap, itthoni nap
+
+	//statuszok
+		//astatus
+		stop=0 			//vezerles all
+		out=1			//tavol
+		athome=2		//itthon
+		awake=3			//ebred
+		active=4		//aktiv	
+		sleep=10		//alszik
+
+		//astatus_konyha
+		//stop=0 			//vezerles all
+		//out=1			//tavol
+		//athome=2		//itthon
+		//awake=3			//ebred
+		eat=6			//eszik	
+		cook=7			//foz
+		dishup=8		//talal
+		//sleep=10		//alszik
+
+
+
+enddefines
+
+
+program
+
+//nap statusza megallapitasa
+	// nap statuszanak megallapitasa programinditaskor
+	if c1=0 then
+		c1=1
+		today=workday
+		tomorrow=workday
+		if s.dofw=4 then		//ma pentek van
+			tomorrow=redday	
+		endif
+		if s.dofw=5 then		//ma szombat van
+			today=redday
+			tomorrow=redday	
+		endif
+		if s.dofw=6 then		//ma vasarnap van
+			today=redday
+		endif
+	endif
+	// nap statuszanak megallapitasa napi rendszeresseggel
+	if s.hour=0 then
+	if s.min=0 then			//ez naponta 0:00-kor vizsgalja
+		today=workday
+		tomorrow=workday
+		if s.dofw=4 then		//ma pentek van
+			tomorrow=redday	
+		endif
+		if s.dofw=5 then		//ma szombat van
+			today=redday
+			tomorrow=redday	
+		endif
+		if s.dofw=6 then		//ma vasarnap van
+			today=redday
+		endif
+	endif				
+	endif
+
+
+//statusz megallapitasa idopontok szerint
+	//percenkent vizsgal, 
+	//tehat gombnyomasos statuszvaltas eseten
+	//a kovetkezo statuszidopontig valtozatlan marad
+	
+	if s.mint=1 then			//percenkent egyszer vizsgal
+	if astatus!=stop then			//ha vezerles nem all
+	
+		//ha nem tavol, akkor van ebresztes, pihenes es lefekves!!!
+		if astatus!=out then
+	
+		//ebresztes, ma hetkoznap van
+		if today=workday then
+
+			//awake 3 	ebresztes
+			if rhour_3awake!=24 then		//ha az ora 24, nem vizsgal
+			if s.hour=rhour_3awake then		//ebresztes oraja
+			if s.min=rminut_3awake then		//perce
+				astatus=awake
+			endif
+			endif
+			endif	
+
+		endif
+
+		//holnap munkanap lesz, ezert a lefekves munkanap szerint
+		if tomorrow=workday then
+
+			//sleep	10	alszik
+			if rhour_10sleep!=24 then	//ha az ora 24, nem vizsgal
+			if s.hour=rhour_10sleep then	//alvas oraja
+			if s.min=rminut_10sleep then	//perce
+				astatus=sleep
+			endif
+			endif
+			endif
+		endif
+
+		//ma hetvege van, unnepnap, ezert ebresztes hetvegi rend szerint
+		if today=redday then	
+
+			//awake	3	ebred
+			if rhour_3awake_weekend!=24 then	//ha az ora 24, nem vizsgal
+			if s.hour=rhour_3awake_weekend then	//hetvegi ebresztes oraja
+			if s.min=rminut_3awake_weekend then	//perce
+				astatus=active
+			endif
+			endif
+			endif
+		endif
+
+		//holnap hetvege lesz, ezert a lefekves hetvege szerint
+		if tomorrow=redday then	
+
+			//sleep	10	alszik
+			if rhour_10sleep_weekend!=24 then	//ha az ora 24, nem vizsgal
+			if s.hour=rhour_10sleep_weekend then	//hetvegi alvas oraja
+			if s.min=rminut_10sleep_weekend then	//perce
+				astatus=sleep
+			endif
+			endif
+			endif
+		endif
+
+		//ha nem volt tavol!!
+		endif
+
+	endif
+	endif
+
+
+	
+//statusz megallapitasa nyomogombok es mas statuszok szerint
+	if s.secht=1 then
+	if astatus!=stop then
+
+	//epulet statusza alapjan
+		if a2!=epulet.astatus then			//ha valtozott az epulet statusza
+		//ha az epulet statusza tavol, ez is tavol lesz
+			if epulet.astatus=1 then		//epulet statusza tavol (1far)
+				astatus=out
+			endif
+
+		//ha az epulet statusza itthon, ez is itthon lesz
+			if epulet.astatus=2 then		//epulet statusza itthon (2athome)
+				astatus=athome
+			endif
+		a2=epulet.astatus				//segedvaltozo beallitasa
+		endif
+
+	//halo statusza alapjan
+//		if a3!=halo.astatus then			//ha valtozott a halo statusza
+//		//ha az rest vagy sleep, ez sleep lesz
+//			if halo.astatus=6 then			//a halo statusza rest (6rest)
+//				astatus=sleep
+//			endif
+//			if halo.astatus=7 then			//epulet statusza itthon (7sleep)
+//				astatus=sleep
+//			endif
+//		a3=halo.astatus					//segedvaltozo beallitasa
+//		endif
+
+	
+	//nyomogombok korben
+	if port.isw_nappali_lampa!=0 then			//nyomogombok korben megnyomva
+
+		//ha itthon volt, aktiv lesz
+		//ha itthon volt, es a halo statusza alvas, ez is sleep lesz
+		if astatus=athome then
+//			if halo.astatus=4 then			//halo alszik
+//				astatus=sleep			//nappali alszik
+//			else
+				astatus=active			//nappali aktiv
+//			endif
+		else
+		//ha nem volt itthon, itthon lesz
+		//ha nem volt itthon, es a halo statusza alvas sleep, ez is sleep lesz
+//			if halo.astatus=4 then			//halo alszik
+//				astatus=sleep			//nappali alszik
+//			else
+				astatus=athome			//nappali itthon
+//			endif		
+		endif
+
+
+	port.isw_nappali_lampa=0				//valtozo nullazas
+	endif
+
+	//távirányító nappali (lépcsõnél)
+		if port.isw_stnappali_itthon=1 then
+			astatus=athome
+		endif
+		if port.isw_stnappali_alszik=1 then
+			astatus=sleep
+		endif
+		if port.isw_stnappali_tavol=1 then
+			astatus=out
+		endif
+
+	//távirányító nappali (konyha)
+		if port.isw_stkonyha_itthon=1 then
+			astatus=athome
+		endif
+		if port.isw_stkonyha_alszik=1 then
+			astatus=sleep
+		endif
+		if port.isw_stkonyha_tavol=1 then
+			astatus=out
+		endif
+
+
+//konyha statusz megallapitasa nyomogombok es mas statuszok szerint
+	
+	//ha astatus out, konyha statusz is out lesz
+		if astatus=out then
+			astatus_konyha=out
+		endif
+
+	//ha astatus sleep, konyha statusz is sleep lesz
+		if astatus=sleep then
+			astatus_konyha=sleep
+		endif
+
+	//ha astatus awake lesz, konyha statusz is awake lesz
+		if a5!=astatus then				//ha valtozott a nappali statusza
+			if astatus=awake then			//a nappali statusza ebreszto
+				astatus_konyha=awake
+			endif
+		a5=astatus					//segedvaltozo beallitasa
+		endif
+
+	//ha astatus athome lesz és konyha statusz out, sleep volt, akkor athome lesz
+		if a6!=astatus then				//ha valtozott a nappali statusza
+			if astatus=athome then			//a nappali statusza itthon
+			if astatus_konyha=out then
+				astatus_konyha=athome
+			endif
+			if astatus_konyha=sleep then
+				astatus_konyha=athome
+			endif
+			endif
+		a6=astatus					//segedvaltozo beallitasa
+		endif
+
+
+
+	//konyhaasztal vilagitas nyomogomb
+		if port.isw_nappali_etkezo!=0 then		//konyhaasztal vilagitas nyomogomb megnyomva
+
+			//ha nem volt 6eat, az lesz			
+			if astatus_konyha!=eat then
+				astatus_konyha=eat
+			//ha 6eat volt, 2athome lesz			
+			else
+				astatus_konyha=athome
+			endif
+
+		port.isw_nappali_etkezo=0			//valtozo nullazas
+		endif
+
+
+	//talalo nyomogomb a mostani helyen es a hutonel is
+		if port.isw_nappali_talalo!=0 then		//talalo nyomogomb megnyomva
+
+			//ha dishup volt, cook lesz
+			if astatus_konyha=dishup then
+				astatus_konyha=cook
+			else
+			//ha cook volt, eat lesz
+			if astatus_konyha=cook then
+				astatus_konyha=eat
+			else
+			//ha sleep volt etkezo es nappali statusza is ebred lesz
+			if astatus_konyha=sleep then
+				astatus_konyha=awake
+				astatus=awake
+			else
+			//egyébként dishup lesz
+				astatus_konyha=dishup
+			endif
+			endif
+			endif
+
+		port.isw_nappali_talalo=0			//valtozo nullazas
+		endif
+
+
+	//mozgaserzekelo a sutonel a mostani nyomogombnal, percenkent vizsgalva
+		if s.mint=1 then
+
+		//ha mozgas van legyen talal
+//		if port.ims_nappali_talalo!=0 then	//mozgaserzekelo a mostani nyomogombnal jelez
+//			astatus_konyha=eat		//konyha eszik
+//			port.ims_nappali_talalo=0	//port nullazas
+//		endif
+		
+
+
+		//ha nincs mozgas 7cook és 8dishup visszaall 6eat-be	
+//		if astatus_konyha=cook then
+//		if port.ims_nappali_talalo=0 then	//mozgaserzekelo a mostani nyomogombnal nem jelez
+//			astatus_konyha=eat		//konyha eszik
+//		endif
+//		endif
+//		if astatus_konyha=dishup then
+//		if port.ims_nappali_talalo=0 then	//mozgaserzekelo a mostani nyomogombnal nem jelez
+//			astatus_konyha=eat		//konyha eszik
+//		endif
+//		endif
+
+		endif
+
+	endif
+	endif
+
+
+
+
+//kert ertekek beallitasa statuszvaltaskor
+	//astatus, nappali statusza
+	if s.secht=1 then			//masodpercenkent vizsgalva
+	if a1!=astatus then			//ha valtozott a statusz
+
+	//tavol eseten, 1out
+		if astatus=out then
+		
+			port.oli_nappali_lampa=rli_nappali_lampa_1			//altalanos vilagítas
+			port.oli_nappali_reflektor=rli_nappali_reflektor_1		//reflektor
+			port.oli_nappali_zoldlampa=rli_nappali_zoldlampa_1		//zöld vilagítas
+			port.oli_nappali_zoldlampa2=rli_nappali_zoldlampa2_1		//zöld vilagítas 2
+			port.oso_nappali_zoldkonnektor=rso_nappali_zoldkonnektor_1	//zöld konnektor
+			port.oli_nappali_eloterlampa=rli_nappali_eloterlampa_1		//elõtér lampa
+			port.ova_nappali=rva_nappali_1					//nappali fûtésszelep
+			port.osw_nappali_hifi=rsw_nappali_hifi_1			//nappali hifi ki/be
+
+			//kijelzore iras
+			port.odpk1_nappali="tavol"
+			//led piros
+			port.orgbled_nappali=1
+
+		endif
+
+	//itthon eseten, 2athome
+		if astatus=athome then
+
+			//ha kint sötét van (epulet.sun moon vagy night), beallitas, egyebkent fények nullára
+			if epulet.sun<3 then
+				port.oli_nappali_lampa=rli_nappali_lampa_2			//altalanos vilagítas
+				port.oli_nappali_reflektor=rli_nappali_reflektor_2		//reflektor
+				//port.oli_nappali_zoldlampa=rli_nappali_zoldlampa_2		//zöld vilagítas
+				port.oli_nappali_zoldlampa2=rli_nappali_zoldlampa2_2		//zöld vilagítas 2
+				//port.oso_nappali_zoldkonnektor=rso_nappali_zoldkonnektor_2	//zöld konnektor
+				port.oli_nappali_eloterlampa=rli_nappali_eloterlampa_2	//elõtér lampa
+			else
+				port.oli_nappali_lampa=0					//altalanos vilagítas
+				port.oli_nappali_reflektor=0					//reflektor
+				//port.oli_nappali_zoldlampa=rli_nappali_zoldlampa_2		//zöld vilagítas
+				port.oli_nappali_zoldlampa2=rli_nappali_zoldlampa2_2		//zöld vilagítas 2
+				//port.oso_nappali_zoldkonnektor=rso_nappali_zoldkonnektor_2	//zöld konnektor
+				port.oli_nappali_eloterlampa=0					//elõtér lampa
+			endif
+			
+			port.ova_nappali=rva_nappali_2					//nappali fûtésszelep
+			port.osw_nappali_hifi=rsw_nappali_hifi_2			//nappali hifi ki/be
+
+			//kijelzore iras
+			port.odpk1_nappali="itthon"
+			//led zöld
+			port.orgbled_nappali=2
+
+		endif
+	
+	//ebred eseten, 3awake
+		if astatus=awake then
+
+			//ha kint sötét van (epulet.sun moon vagy night), beallitas, egyebkent fények nullára
+			if epulet.sun<3 then
+				port.oli_nappali_lampa=rli_nappali_lampa_3			//altalanos vilagítas
+				port.oli_nappali_reflektor=rli_nappali_reflektor_3		//reflektor
+				//port.oli_nappali_zoldlampa=rli_nappali_zoldlampa_3		//zöld vilagítas
+				port.oli_nappali_zoldlampa2=rli_nappali_zoldlampa2_3		//zöld vilagítas 2
+				//port.oso_nappali_zoldkonnektor=rso_nappali_zoldkonnektor_3	//zöld konnektor
+				//port.oli_nappali_eloterlampa=rli_nappali_eloterlampa_3	//elõtér lampa
+			else
+				port.oli_nappali_lampa=0					//altalanos vilagítas
+				port.oli_nappali_reflektor=0					//reflektor
+				//port.oli_nappali_zoldlampa=rli_nappali_zoldlampa_3		//zöld vilagítas
+				port.oli_nappali_zoldlampa2=rli_nappali_zoldlampa2_3		//zöld vilagítas 2
+				//port.oso_nappali_zoldkonnektor=rso_nappali_zoldkonnektor_3	//zöld konnektor
+				//port.oli_nappali_eloterlampa=rli_nappali_eloterlampa_3	//elõtér lampa
+			endif
+
+			port.ova_nappali=rva_nappali_3					//nappali fûtésszelep
+			port.osw_nappali_hifi=rsw_nappali_hifi_3			//nappali hifi ki/be
+
+			//kijelzore iras
+			port.odpk1_nappali="ebreszt"
+			//led sárga
+			port.orgbled_nappali=3
+
+		endif
+	
+	//aktiv eseten, 4active
+		if astatus=active then
+
+			port.oli_nappali_lampa=rli_nappali_lampa_4			//altalanos vilagítas
+			port.oli_nappali_reflektor=rli_nappali_reflektor_4		//reflektor
+			//port.oli_nappali_zoldlampa=rli_nappali_zoldlampa_4		//zöld vilagítas
+			port.oli_nappali_zoldlampa2=rli_nappali_zoldlampa2_4		//zöld vilagítas 2
+			//port.oso_nappali_zoldkonnektor=rso_nappali_zoldkonnektor_4	//zöld konnektor
+			//port.oli_nappali_eloterlampa=rli_nappali_eloterlampa_4	//elõtér lampa
+			port.ova_nappali=rva_nappali_4					//nappali fûtésszelep
+			port.osw_nappali_hifi=rsw_nappali_hifi_4			//nappali hifi ki/be
+
+			//kijelzore iras
+			port.odpk1_nappali="aktiv"
+			//led nincs
+			port.orgbled_nappali=0
+
+		endif
+
+	//alszik eseten, 10sleep
+		if astatus=sleep then
+
+			port.oli_nappali_lampa=rli_nappali_lampa_10			//altalanos vilagítas
+			port.oli_nappali_reflektor=rli_nappali_reflektor_10		//reflektor
+			port.oli_nappali_zoldlampa=rli_nappali_zoldlampa_10		//zöld vilagítas
+			port.oli_nappali_zoldlampa2=rli_nappali_zoldlampa2_10		//zöld vilagítas 2
+			port.oso_nappali_zoldkonnektor=rso_nappali_zoldkonnektor_10	//zöld konnektor
+			port.oli_nappali_eloterlampa=rli_nappali_eloterlampa_10		//elõtér lampa
+			port.ova_nappali=rva_nappali_10					//nappali fûtésszelep
+			port.osw_nappali_hifi=rsw_nappali_hifi_10			//nappali hifi ki/be
+
+			//kijelzore iras
+			port.odpk1_nappali="pihen"
+			//led kék
+			port.orgbled_nappali=4
+
+
+		endif
+
+
+	
+	endif
+
+	a1=astatus				//segedvaltozo beallitasa
+	endif
+
+//astatus_konyha, konyha statusza
+	if s.sect=1 then			//masodpercenkent vizsgalva
+	if a4!=astatus_konyha then		//ha valtozott a statusz
+
+	//tavol eseten, 1out
+		if astatus_konyha=out then
+		
+			port.oli_nappali_etkezoasztallampa=rli_nappali_etkezoasztallampa_1	//konyha asztal vilagítas
+			port.oli_nappali_konyhapultlampa=rli_nappali_konyhapultlampa_1	//konyhapult vilagítas, kék lampak
+			port.oli_nappali_fozolampa=rli_nappali_fozolampa_1		//konyhapult vilagítas, sütõ
+			port.oli_nappali_talalolampa=rli_nappali_talalolampa_1		//talalóeszköz szekrény 
+			port.ove_nappali_fozo=rve_nappali_fozo_1			//konyha ventilator
+			port.oli_nappali_kamralampa=rli_nappali_kamralampa_1		//kamra vilagítas
+
+			//kijelzore iras
+			port.odpk2_nappali="tavol"
+			//led tálalóasztalnál - piros
+			port.orgbled_nappali_etkezo=1
+
+
+		endif
+
+	//itthon eseten, 2athome
+		if astatus_konyha=athome then
+
+			//ha kint sötét van (epulet.sun moon vagy night), beallitas, egyebkent fények nullára
+			if epulet.sun<3 then
+				port.oli_nappali_etkezoasztallampa=rli_nappali_etkezoasztallampa_2	//konyha asztal vil.
+				port.oli_nappali_konyhapultlampa=rli_nappali_konyhapultlampa_2	//konyhapult vil., kék lampak
+				port.oli_nappali_fozolampa=rli_nappali_fozolampa_2		//konyhapult vilagítas, sütõ
+				port.oli_nappali_talalolampa=rli_nappali_talalolampa_2		//talalóeszköz szekrény 
+				//port.oli_nappali_kamralampa=rli_nappali_kamralampa_2		//kamra vilagítas
+			else
+				port.oli_nappali_etkezoasztallampa=0				//konyha asztal vil.
+				port.oli_nappali_konyhapultlampa=0				//konyhapult vil., kék lampak
+				port.oli_nappali_fozolampa=0					//konyhapult vilagítas, sütõ
+				port.oli_nappali_talalolampa=0					//talalóeszköz szekrény 
+				//port.oli_nappali_kamralampa=rli_nappali_kamralampa_2		//kamra vilagítas
+			endif
+
+			port.ove_nappali_fozo=rve_nappali_fozo_2			//konyha ventilator
+
+			//kijelzore iras
+			port.odpk2_nappali="itthon"
+			//led tálalóasztalnál - zöld
+			port.orgbled_nappali_etkezo=2
+
+		endif
+	
+	//ebred eseten, 3awake
+		if astatus_konyha=awake then
+
+			//ha kint sötét van (epulet.sun moon vagy night), beallitas, egyebkent fények nullára
+			if epulet.sun<3 then
+				port.oli_nappali_etkezoasztallampa=rli_nappali_etkezoasztallampa_3	//konyha asztalvil.
+				port.oli_nappali_konyhapultlampa=rli_nappali_konyhapultlampa_3	//konyhapult vil., kék lampak
+				port.oli_nappali_fozolampa=rli_nappali_fozolampa_3		//konyhapult vilagítas, sütõ
+				port.oli_nappali_talalolampa=rli_nappali_talalolampa_3		//talalóeszköz szekrény 
+				//port.oli_nappali_kamralampa=rli_nappali_kamralampa_3		//kamra vilagítas
+			else
+				port.oli_nappali_etkezoasztallampa=0				//konyha asztalvil.
+				port.oli_nappali_konyhapultlampa=0				//konyhapult vil., kék lampak
+				port.oli_nappali_fozolampa=0					//konyhapult vilagítas, sütõ
+				port.oli_nappali_talalolampa=0					//talalóeszköz szekrény 
+				//port.oli_nappali_kamralampa=rli_nappali_kamralampa_3		//kamra vilagítas
+			endif
+
+			port.ove_nappali_fozo=rve_nappali_fozo_3			//konyha ventilator
+
+
+			//kijelzore iras
+			port.odpk2_nappali="ebreszt"
+			//led tálalóasztalnál - sárga
+			port.orgbled_nappali_etkezo=3
+
+
+		endif
+	
+	//eszik eseten, 4eat
+		if astatus_konyha=eat then
+
+			port.oli_nappali_etkezoasztallampa=rli_nappali_etkezoasztallampa_6	//konyha asztal vilagítas
+			port.oli_nappali_konyhapultlampa=rli_nappali_konyhapultlampa_6	//konyhapult vilagítas, kék lampak
+			port.oli_nappali_fozolampa=rli_nappali_fozolampa_6		//konyhapult vilagítas, sütõ
+			port.oli_nappali_talalolampa=rli_nappali_talalolampa_6		//talalóeszköz szekrény 
+			port.ove_nappali_fozo=rve_nappali_fozo_6			//konyha ventilator
+			//port.oli_nappali_kamralampa=rli_nappali_kamralampa_6		//kamra vilagítas
+
+			//kijelzore iras
+			port.odpk2_nappali="eszik"
+			//led tálalóasztalnál - nincs
+			port.orgbled_nappali_etkezo=0
+
+
+		endif
+
+	//foz eseten, 7cook
+		if astatus_konyha=cook then
+
+			port.oli_nappali_etkezoasztallampa=rli_nappali_etkezoasztallampa_7	//konyha asztal vilagítas
+			port.oli_nappali_konyhapultlampa=rli_nappali_konyhapultlampa_7	//konyhapult vilagítas, kék lampak
+			port.oli_nappali_fozolampa=rli_nappali_fozolampa_7		//konyhapult vilagítas, sütõ
+			port.oli_nappali_talalolampa=rli_nappali_talalolampa_7		//talalóeszköz szekrény 
+			port.ove_nappali_fozo=rve_nappali_fozo_7			//konyha ventilator
+			//port.oli_nappali_kamralampa=rli_nappali_kamralampa_7		//kamra vilagítas
+
+			//kijelzore iras
+			port.odpk2_nappali="foz"
+			//led tálalóasztalnál - nincs
+			port.orgbled_nappali_etkezo=0
+
+
+		endif
+
+	//talal eseten, 8dishup
+		if astatus_konyha=dishup then
+
+			port.oli_nappali_etkezoasztallampa=rli_nappali_etkezoasztallampa_8	//konyha asztal vilagítas
+			port.oli_nappali_konyhapultlampa=rli_nappali_konyhapultlampa_8	//konyhapult vilagítas, kék lampak
+			port.oli_nappali_fozolampa=rli_nappali_fozolampa_8		//konyhapult vilagítas, sütõ
+			port.oli_nappali_talalolampa=rli_nappali_talalolampa_8		//talalóeszköz szekrény 
+			port.ove_nappali_fozo=rve_nappali_fozo_8			//konyha ventilator
+			//port.oli_nappali_kamralampa=rli_nappali_kamralampa_8		//kamra vilagítas
+
+			//kijelzore iras
+			port.odpk2_nappali="talal"
+			//led tálalóasztalnál - nincs
+			port.orgbled_nappali_etkezo=0
+
+		endif
+
+
+	//alszik eseten, 10sleep
+		if astatus_konyha=sleep then
+
+			port.oli_nappali_etkezoasztallampa=rli_nappali_etkezoasztallampa_10	//konyha asztal vilagítas
+			port.oli_nappali_konyhapultlampa=rli_nappali_konyhapultlampa_10	//konyhapult vilagítas, kék lampak
+			port.oli_nappali_fozolampa=rli_nappali_fozolampa_10		//konyhapult vilagítas, sütõ
+			port.oli_nappali_talalolampa=rli_nappali_talalolampa_10		//talalóeszköz szekrény 
+			port.ove_nappali_fozo=rve_nappali_fozo_10			//konyha ventilator
+			port.oli_nappali_kamralampa=rli_nappali_kamralampa_10		//kamra vilagítas
+
+			//kijelzore iras
+			port.odpk2_nappali="alszik"
+			//led tálalóasztalnál - kék
+			port.orgbled_nappali_etkezo=4
+
+
+		endif
+
+
+	
+	endif
+
+	a4=astatus_konyha		//segedvaltozo beallitasa
+	endif
+
+
+
+//kozvetlen vezerlesek masodpercenkent
+	if s.secht=1 then
+
+	//kamra világítás
+		//kamra ajtó nyitás - ha jelez, világít	
+		if port.ico_nappali_kamraajto=1 then
+			port.oli_nappali_kamralampa=0		//kamra világítás
+		endif	
+
+		//kamra világítás nyomógomb - ha jelez, változik
+		if port.isw_nappali_kamralampa!=0 then
+			if port.oli_nappali_kamralampa!=rli_nappali_kamralampa then
+				port.oli_nappali_kamralampa=rli_nappali_kamralampa	//kamra világítás
+			else			
+				port.oli_nappali_kamralampa=0				//kamra világítás
+			endif
+		port.isw_nappali_kamralampa=0						//valtozo nullazas
+		endif
+
+
+	//zöld világítás 2
+		//zöld világítás nyomógomb, zsinóros, asztal felett - ha jelez, változik			
+		if port.isw_nappali_zoldlampa2!=0 then
+			if port.oli_nappali_zoldlampa2!=rli_nappali_zoldlampa2 then
+				port.oli_nappali_zoldlampa2=rli_nappali_zoldlampa2	//zöld világítás 2
+			else
+				port.oli_nappali_zoldlampa2=0				//zöld világítás 2
+			endif
+		port.isw_nappali_zoldlampa2=0						//valtozo nullazas
+		endif
+
+	//zöld konnektor
+		//állatkert gomb, a mennyzetrõl lóg szintén - ha jelez, változik
+		if port.iswk_nappali_zoldkonnektor!=0 then
+			if port.oso_nappali_zoldkonnektor!=rso_nappali_zoldkonnektor then
+				port.oso_nappali_zoldkonnektor=rso_nappali_zoldkonnektor //zöld konnektor
+			else
+				port.oso_nappali_zoldkonnektor=0 			//zöld konnektor
+			endif
+		port.iswk_nappali_zoldkonnektor=0					//valtozo nullazas
+		endif			
+
+	//elõtér lámpa
+		//elõtér világítás nyomógombok - ha jelez, változik
+		if port.isw_nappali_eloterlampa!=0 then			
+			if port.oli_nappali_eloterlampa!=rli_nappali_eloterlampa then			
+				port.oli_nappali_eloterlampa=rli_nappali_eloterlampa	//elõtér lámpa
+			else
+				port.oli_nappali_eloterlampa=0				//elõtér lámpa
+			endif
+		port.isw_nappali_eloterlampa=0						//valtozo nullazas
+		endif
+
+	endif 		//masodperc ciklus lezarasa
+
+//////////////////////////////////////////////////////////////
+
+//kijelzos modul gombok kezelese
+
+	if s.sect=1 then
+		//nappali statusz valtasa
+		if port.iswk_up_nappali!=0 then		//fel gombbal statuszertek novelese eggyel
+			port.oswk_up_nappali=0		//fel gomb nullazasa
+//			astatus=astatus+1
+		endif
+		if port.iswk_down_nappali!=0 then	//le gombbal statuszertek csokkentese eggyel
+			port.oswk_down_nappali=0	//le gomb nullazasa
+//			astatus=astatus-1
+		endif
+
+		//konyha statusz valtasa
+		if port.iswk_enter_nappali!=0 then	//fel gombbal statuszertek novelese eggyel
+			port.oswk_enter_nappali=0	//fel gomb nullazasa
+//			astatus_konyha=astatus_konyha+1
+		endif
+		if port.iswk_cancel_nappali!=0 then	//le gombbal statuszertek csokkentese eggyel
+			port.oswk_cancel_nappali=0	//le gomb nullazasa
+//			astatus_konyha=astatus_konyha-1
+		endif
+	endif
+
+
+
+
+//kijelzok kezelese percenkent
+
+	if s.mint=1 then	
+	
+		//elso sor: nappali / kulso homerseklet
+		ntostr port.ite_nappali,s11
+		ntostr port.ite_terasz,s12
+		s1=s11+"/"
+		s1=s1+s12
+		port.odpk1_nappali=s1
+
+		//masodik sor: kert nappali homerseklet, kazan megy/all	
+		ntostr port.rte_nappali,s21
+		if port.osw_1kazan=1 then
+			s22=" megy"	
+		else
+			s22=" all"
+		endif
+		s2=s21+s22
+		port.odpk2_nappali=s2
+		
+	endif	
+
+
+endprogram
+
+	

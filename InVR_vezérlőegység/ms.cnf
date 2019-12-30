@@ -1,0 +1,31 @@
+//InVR system 1.0
+
+msvport com1 19200 t=8
+
+linlog=yes
+sql=mcs001 localhost 0 root hbMq5nOmd
+
+debug=yes		// debuggolas
+exit=yes
+varsave=yes		// valtozomentes
+varpath=/.mcs/vez/var/
+logfile=/.mcs/vez/log/logg
+syslog=yes
+
+pprec=1
+ports=modulch
+
+//  //  //  //  //  //  //
+
+load system.mcs	//program futasanak helye, datum, ido kiirasa
+load port.mcs		//mhome portok, statuszuk, hibak, hibakezeles kiirasa
+
+//terek vezerlese	//  ----------------
+
+load epulet.mcs
+
+load halo.mcs
+load nappali.mcs
+
+// terek es statusok kiirasa
+load status.mcs

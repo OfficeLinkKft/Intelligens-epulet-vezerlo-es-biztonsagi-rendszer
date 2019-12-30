@@ -1,0 +1,1233 @@
+InVR vezérlõ program és modulok leírása
+
+
+
+A  program  indítása  az  mp  paranccsal  lehetséges.   A  különbözõ
+fájlokat, amik a  mûködéséhez  szükségesek,  az aktuális könyvtárban
+keresi.  Célszerû az mp  programot  és  a  fájlokat  ugyan  abban  a
+könyvtárban tartani, és indítás elõtt arra a könyvtárra váltani.  Az
+mpi fájl indításával ez megtörténik.
+
+Egyszerre legfeljebb 500 program tölthetõ be.
+
+
+A programban a kulcsszavakat kisbetûvel kell írni.
+
+A program felépítése:
+
+
+A  program  elején,  még  a  változódefiníciók elõtt meg kell adni a
+program nevét a következõ módon:
+
+progname prgnev
+
+A prgnev  a  program  neve,  amivel  a  programot késõbb azonosítani
+lehet.  Legfeljebb 8 karakter hosszú  lehet.   A  program  elmentett
+változói is ilyen nevû fájlba kerülnek.
+
+
+
+Definiálható konstansok:
+
+Lehetõség van többször felhasznált változók, szövegek definiálására.
+Ez a "defines" kulcsszó után lehetséges a következõ formában:
+definiált név=definíció
+pl.:
+
+hat=6
+
+   A  definíció  tetszõleges  szó  lehet.   Ha  valahol  leírjuk   a
+definíció  nevét,  akkor  helyette  a  definíciót  fogja használni a
+program.
+
+   A definíciókat az  "enddefines"  szóval  kell  lezárni.
+   A  definíció  bárhol  állhat  a  programban,   (változóblokk   és
+programblokk  belsejében nem!) de csak az utána  levõ programrészben
+lehet használni.
+   A definíció neve legfeljebb 32  karakter lehet, a definíció pedig
+32 karakter.  Egy programban legfeljebb  100  definíció  lehet.   (A
+linuxos változatban 1000)
+
+pl.:
+defines
+    hat=6                  // a 6 helyett a hat-ot lehet hasznalni
+    szoveg="ez a szoveg"
+    p=print                // a print utasítás helyett a p használható
+enddefines
+
+    A programban definiált  konstansok  hozzáadódnak a konfigurációs
+fájlban definiáltakhoz.
+
+
+
+Változók:
+
+A változók típusai:
+
+int: egéssz szám, értéke -32768 - 32767 lehet
+flo: lebegõpontos szám, értéke -5E17 - 5E17 lehet
+str: karaktersorozat, hossza legfeljebb 255 lehet
+
+   Az int és a  flo  típusú  változóból  1 dimenziós tömböt is lehet
+létrehozni.  A tömb max.  mérete 255 lehet.
+
+   A változókat  más  programmodul  is  tudja  használni.   Ekkor  a
+változónév  elõtt meg kell adni a program nevét is, és egy pont után
+a  változónevet.   Pl.   futes.meleg  A  különbözõ programmodulokban
+lehet ugyan olyan változónév.
+
+   Mûveleteknél   és   összehasonlításnál   változó   helyett  lehet
+használni számkonstanst is.  String esetén az összehasonlítás csak =
+(egyenlõ)  és  !=  (nem  egyenlõ)  lehet,  és  csak   az   összeadás
+értelmezett.
+
+   Csak   egyforma   típusú   változókkal   lehet   mûveleteket   és
+összehasonlítást végezni.  Ez alól kivétel  az  egyszerû  értékadás,
+itt lehet int és flo típusú változó vegyesen.
+
+   A flo típusú változónál a  program figyeli a túlcsordulást, és ha
+túlcsordult,  akkor  a  program  megáll.    Int   változónál   nincs
+túlcsordulásfigyelés,   és  ha  az  int  típusú  változó  túl-  vagy
+alulcsordul,  akkor   az   értéke   nehezen   meghatározható  lessz.
+Általában elõjelet is vált.
+
+   A  változók  neveiben  a  kis-  és  nagybetût  megkülönbözteti  a
+program.  A név legfeljebb 32 karakter hosszú lehet, és betûvel kell
+kezdõdnie, de tartalmazhat számot és más jeleket is.
+
+A változókat a program elõtt  kell definiálni a "variables" kulcsszó
+után.  A változódefiníciót az "endvariables" szóval kell lezárni.
+
+Pl.:
+
+variables
+    int valami
+    flo valtozo=45
+    flo masik=1.6
+    int tomb [10]
+    flo tomb2[5]=1,2,3,4,3.14
+    str szoveg
+    str szoveg2="ez a kezdoszoveg"
+endvariables
+
+Az "=" után  lehet  kezdeti  értéket  adni  a  változónak.   Amelyik
+változó nem kap értéket, az 0 lesz. String változó esetén üres.
+
+Az str típusú változó kezdõértékét idézõjelek között kell megadni.
+Tömbdefiníciónál a kapcsos  zárójelben  a  legnagyobb tömbelem száma
+van, a tömbnek ennél 1-el több eleme van, mert van 0. elem is.   Itt
+is  meg  lehet  adni  a kezdõértékeket vesszõvel elválaszva.  Ha nem
+adunk  meg  semmit,  akkor  0  lesz  a  tömbelemek kezdõértéke.  Nem
+kötelezõ az összes elem megadása  sem.  A tömbelemet ugyan úgy lehet
+használni, mint bármely változót.  A tömbindex lehet  konstans  szám
+is, vagy változó is, de tömbelem nem lehet tömbindex.
+
+Az  MSV-s  változókat  a  változódefiníció  után  "m"  betûvel  kell
+jelezni.  Utánna pedig  meg  kell  adni  a  típusát,  az  alsócímet,
+felsõcímet,  belsõ  címet,  periodikus  belvasású  bemeneti  változó
+esetén még a frissítés idejét.
+
+   pl.:
+   int valami m od 5,6,7      // ez od, címei 5,6, belsõ címe 7
+   flo valtozo=45 m it 47,100,1,100  //  ez  it, címei 47,100,1,
+   frissítési ideje 10 másodperc
+   int feny m id 30,55,8,0    // ez id, címei 30,55,8
+   változáslekérdezett
+
+   A címek a 0-255 tartományban  lehetnek.  A frissítési idõ 0-65535
+lehet.  A frissítési idõ csak bemeneti változó  esetén  értelmezett,
+de kimeneti változónál sem okoz hibát.  Ha nem adunk meg frissítést,
+az  azt  jelenti,  hogy akkor indul a változó beolvasása az MSV-rõl,
+mikor a program olvassa  a  változót.   A  frissítési idõ a megadott
+szám 1/10-ed része másodpercben.
+
+   Ha 0-t adunk meg frissítésnek, akkor az változásérzékelt bemeneti
+változó lesz.  Ez azt jelenti, hogy ha  változik  az  értéke,  akkor
+olvassa  be  a  program.   Ez nem minden portnál mûködik, hanem csak
+annál, ami erre alkalmas.  (Ez  minden modul leírásában benne van) A
+változásérzékelt  változó  úgy  mûködik,  hogy  0.1  másodpercenként
+kérdezi le a program a változásokat, és ha  valamelyik  port  jelez,
+akkor  azt  beolvassa.  Tehát kb.  0.1s után érkezik meg a változás.
+Lehetõleg  ezeket  a  portokat   kell  használni,  és  a  periodikus
+beolvasású változókat csak olyan célokra használni, amit ritkán kell
+beolvasni, mert terhelik a  kommunikációt,  ha  túl  rövid  idõnként
+olvassuk be õket.
+
+   Legfeljebb 900 MSV változó lehet. (a linuxos programban 10000)
+
+
+
+   A  grafikus  felület  (Linux)  felé  kommunikáló változót egy "g"
+betûvel  kell  jelezni  a  változódefiníció  után.   Ez  lehet MSV-s
+változódefiníció után is.
+
+   pl.:
+   int valami g                    // ez csak grafikus
+   flo valtozo=45 g                // ez is
+   int valami m od 5,6,7 g         // ez MSV-s és grafikus
+   flo valtozo=45 m it 47,100,1,100 g    // ez is
+
+Tömb nem lehet grafikus változó.
+
+   A  logolt  grafikus változókat gl jelzi.  Ez azt jelenti, hogy ha
+negváltozott az értéke,  és  kiküldésre  kerül  a  linux felé, akkor
+bekerül a log adatbázisba is.  De csak akkor, ha a konfig.   fájlban
+a linux logolás engedélyezve van.
+A 4.35 programváltozat után a gl után meg lehet adni egy számot  is,
+ekkor  a  változó  logolása a megadott számú msvlog táblába kerül.  A
+szám 0-9 között  lehet,  0=msvlog,  1=msvlog1,  stb...  Ha nincs szám,
+akkor az msvlog táblába kerül a változó logolása.
+   Ha a konfig.   fájlban  msvlog  darabolás  van  megadva, akkor az
+msvlog tábla  neve  után  még  a  dátumot  is  hozzáfûzi  valamilyen
+formában.  (bõvebben a kommunikáció a grafikus felület felé és konfig.
+fájl leírásánál)
+
+   Legfeljebb  1000  grafikus  változó lehet.  (a linuxos programban
+10000)
+
+
+   A  mentendõ  változókat  egy   "s"   betûvel   kell   jelezni   a
+változódefiníció  után.  Ez lehet MSV-s és grafikus változódefiníció
+után is.
+
+   pl.:
+   flo valami s                  // ez csak mentendõ
+   flo valtozo=45 g s            // grafikus és mentendõ is
+   int valami m od 5,6,7 g s     // ez MSV-s és grafikus és mentendõ
+   flo valtozo=45 m it 47,100,1,100 g s   // ez is
+
+   Ha  egy változó többféle fajta, (msv, grafikus, mentett) akkor az
+msv-t kell elõször definiálni,  utána  a grafikust, végül a mentést.
+Ha nem mind szükséges, a sorrendnek akkor is ennek kell lennie.
+
+   Tömb nem lehet mentendõ változó.
+
+
+Számkonstansok:
+
+   Számkonstansokat általában a változók helyén lehet használni,  de
+értéket  adni  a  konstansoknak  nem lehet.  (Pl.: 5=7) A flo és int
+tipusú konstans egy szám  lehet,  az  str  típusú konstans pedig egy
+idézõjelek közé zárt tetszõleges  szöveg.   Ezért  a  szövegben  nem
+lehet idézõjel.
+
+
+Rendszerváltozók:
+
+   Vannak rendszerváltozók,  amikben  olyan  értékek  vannak, amiket
+minden program felhasználhat.  A rendszerváltozókat  minden  program
+el  tudja érni.  Ezekre az "s." elõtaggal lehet hivatkozni, úgy mint
+más programok változóira.  Ezek a változók a következõk:
+
+s.sech	 az idõ tizedmásodperce (int)
+s.sec    az idõ másodperce (int)
+s.min    az idõ perce (int)
+s.hour   az idõ órája (int)
+s.day 	 a dátum napja (int)
+s.month  a dátum hónapja (int)
+s.year   a dátum éve (int)
+s.dofw   a hét napja, hétfõ=0, kedd=1.....vasárnap=6 (int)
+s.secht  minden tizedmásodpercben 1 szer 1 lesz az értéke, máskor 0 (int)
+s.sect   minden másodpercben 1 szer 1 lesz az értéke, máskor 0 (int)
+s.mint   minden percben 1 szer 1 lesz az értéke (percváltáskor), máskor 0 (int)
+s.hourt  minden órában 1 szer 1 lesz az értéke (óraváltáskor), máskor 0 (int)
+s.time   az idõ óra:perc:másodperc formában (str)
+s.date   a dátum év.hó.nap formában (str)
+s.mreset ha ennek az értéke nem 0, akkor az MSV-n reseteli az eszközöket (int)
+s.mcern  ez az MSV átviteli hibák számát jelzi, ennyi alkalommal volt hiba.
+         Max. 32000-ig nõl, tovább nem. (int)
+s.movern ez az MSV kommunikáció túlterhelés miatti adatvesztések számát jelzi.
+         Ennyi változó veszett el. Max. 32000-ig nõl, tovább nem. (int)
+s.gcern  ez a grafikus felület (linux) felé menõ kommunikáció hibáinak számát
+         jelzi. Max. 32000-ig nõl. (int)
+s.mce1   az utolsó 5 kommunikációs hibás MSV-s portok címei (str)
+s.mce2
+s.mce3
+s.mce4
+s.mce5
+s.mcep   ez mutatja hogy melyik s.mceX változót írta utoljára, az volt
+         az utolsó hibás cím (int)
+
+   Ezeket a  változókat  írni  is  lehet.   Ha  az idõváltozók közül
+valamelyiknek megváltoztatják az értékét (az "s.sech"  kivételével),
+akkor  a  gép  rendszeróráját  beállítja  arra  az  értékre.   Ha  a
+dátumváltozók  közül valamelyiknek megváltoztatják az értékét, akkor
+a  gép   rendszerdátumát   beállítja   arra   az   értékre.   Ez  az
+idõvisszaírás csak a dosos programban mûködik, a linuxos program nem
+változtatja meg a rendszeridõt.
+
+   Az  "s.time"  és   az   "s.date"   változó   string,  ha  ezeknek
+megváltoztatjuk az értékét, annak nincs hatása  a  tényleges  idõre.
+Ezek csak az idõpont egyszerûbb kiíratásához vannak.
+   Az "s.mreset" változót a felhasználó írja, ha az MSV-s eszközöket
+resetelni akarja.  A reset után  vissza  kell írni 0-ba, hogy az MSV
+mûködni tudjon.  A  resetnek  legalább  5  másoperc  hosszúnak  kell
+lennie.
+
+
+A program:
+
+A  program  kezdetét a "program" a végét az "endprogram" szóval kell
+jelezni a következö módon:
+
+program
+    itt vannak az utasítások
+endprogram
+
+
+Utasítások:
+
+   Az  utasításokat  egymás után, sorrendben hajtja végre a program.
+Egy sorban csak egy utasítás lehet.  Az utasításokat kisbetûvel kell
+írni.  Az utasítás  és  a  következõ  szó  (változó, konstans, stb.)
+között mindig kell legalább 1 szóköznek lenni.
+
+//
+megjegyzés.
+Ha ez a jel szerepel egy sorban, az  utána következõ részt figyelmen
+kívül hagyja a fordító.  Ide lehet bármit írni.  Lehet ez  a  jel  a
+sor elején is, ekkor az egész sort kihagyja.
+
+Pl.:
+    let a=45  // ez értékadás
+
+
+LET
+értékadás  egy  változónak.
+Itt  nem  csak  egyszerû  értékadás  szerepelhet,  hanem  valamilyen
+matematikai kifejezés is.  A lehetséges  mûveletek:  összeadás  (+),
+kivonás  (-),  szorzás (*), osztás (/), logikai és (&), logikai vagy
+(|).   Bonyolultabb  kifejezés,   zárójelezés   nem  lehetséges.   A
+kifejezésekben csak azonos típusú változók szerepelhetnek, kivéve az
+egyszerû értékadás, mert  ott  lehet  flo  és  int változó vegyesen.
+String típus esetén csak  az  összeadás  értelmezett,  ekkor  a  két
+stringet  összefûzi.   Az  és  (&)  és  a  vagy (|) mûvelet csak int
+változóval lehetséges.
+
+flo   típusú  változó  esetén  ha  az  értéke  túllépi  az  5E17-et,
+(túlcsordul) akkor a  program  megáll.   A  0-val  való osztás hibát
+okoz, ekkor is a hibás program megáll.  Ezekben az esetekben csak  a
+hibát okozó program áll meg, a többi fut tovább.
+
+Pl.:
+     let a=422
+     let A=B
+     let A=B+1
+     let A=C*2
+     let tomb[4]=tomb[i]
+     let s="szoveg"                      // itt s str típusú
+     let s=s1+"hozzaadott szoveg"        // s és s1 str típusú
+     let a=b&c                           // a,b,c int típusú
+     let a=b|8                           // a,b int típusú
+
+A let utasítást el is lehet hagyni.
+Pl.:
+
+     A=C*2
+     a=54
+
+
+IF
+feltételes elágazás
+Ha a feltétel igaz, akkor  a  THEN  ágat,  ha nem akkor az ELSE ágat
+hajtja végre.
+
+if feltétel then
+    utasítás (igaz feltétel esetén végrehajtandó)
+else
+    utasítás (hamis feltétel esetén végrehajtandó)
+endif
+
+Az ELSE ág elmaradhat.  Az egyes ágakban több utasítás is lehet.  Az
+IF szerkezetek 50-es mélységig egymásba ágyazhatóak.
+   A   feltétel  két  változó  vagy  konstans  összehasonlítása  egy
+operátor segítségével.  Lehetséges  operátorok:  "=" (egyenlõ), "!="
+(nem  egyenlõ),  "<"  (kisebb),  "<="  (kisebb  vagy  egyenlõ),  ">"
+(nagyobb), ">=" (nagyobb vagy egyenlõ), "&"  (és,  ekkor  ha  a  két
+paraméterrel elvégzett  logikai  és  mûveletnek  nem  0 az eredménye
+akkor igaz, csak int típusú változóhoz)
+
+Pl.:
+if A>B then
+    C=C+2
+    B=C*8
+else
+    Z=32
+endif
+
+
+if c=65 then
+    c=58
+endif
+
+
+CLS
+képernyõtörlés
+Letörli a kimeneti képernyõt, és a kiírásmutatót  az  1,1  pozícióra
+állítja.
+
+Pl.:
+cls
+
+
+GOTOXY
+a megadott képernyõpozícióba állítja a kiírásmutatót.
+A koordinátákat az utasítás után kell megadni vesszõvel elválasztva.
+Az  x  koordináta  az  1.,  az  y a 2. A következõ kiírás a megadott
+pozíción fog indulni.  Az 1,1 pozíció a képernyõ bal felsõ sarka.  A
+jobb alsó sarok címe a  80,25.   Ha  a  koordináták nem esnek ebbe a
+tartományba, akkor az utasítás nem csinál semmit.
+
+Pl.:
+gotoxy 4,6
+gotoxy x,y
+
+
+PRINT
+kiírja a megadott változót vagy konstanst
+A gotoxy utasítással beállított pozícióba kiírja a megadott  dolgot.
+Ha  nem volt elõtte gotoxy utasítás, akkor az aktuális pozícióba ír,
+ami az elõzõ kiírás után van.
+
+Pl.:
+print x            // kiírja az x változó értékét
+print 5            // 5-öt ír ki
+print "szoveg"     // kiírja a megadott szöveget
+
+A változó lehet numerikus vagy string is.
+A  flo  tipusú változó kiírt tizedesjegyeinek számát a konfigurációs
+fájlban lehet beállítani minden print és printv utasításhoz.
+
+
+PRINTV
+kiírja a megadott változót a megadott pozícióba, és a program futása
+közben a változó értékét meg lehet változtatni
+Ezzel  az  utasítással  lehet  változtatni  menet  közben a változók
+értékét.   Az  utasítás  után  meg  kell  adni  a  változó  nevét, x
+koordinátát, y koordinátát, egységet.  A koordináták  és  az  egysŠg
+csak konstans lehet.
+
+Pl:
+printv valtozo,10,15,5
+printv tt[5],10,5
+
+A tömbindex is csak konstans lehet.
+Mûködése a következõ:
+A program futása  során  a  változó  értéke  megjelenik  a  megadott
+helyen.   Valamelyik  változó  mindig  ki van jelölve, ezt az inverz
+kiírás jelzi.  A kijelölést a le és fel gombokkal lehet mozgatni.  A
+változó  értékét  a  jobbra  és a balra gombokkal lehet az egységgel
+csökkenteni vagy növelni.
+   Az egységet nem kötelezõ megadni, ha nincs megadva akkor 1 lesz.
+
+  Egyszerre max.  40 változót lehet printv utasítással  figyelni  és
+változtatni.
+
+
+PRINTNL
+A következõ sor elejére állítja a kiírásmutatót.
+pl.:
+printnl
+
+
+A képernyõkezelõ utasítások csak a program alapállapotában mûködnek.
+Debug és programbeolvasás módban nem csinálnak semmit.
+
+
+NTOSTR
+Numerikus változót stringgé  konvertál.   A  numerikus változó lehet
+int vagy flo.  Ha flo a változó,  akkor  a  tizedesjegyek  számát  a
+konfig.  fájlban a pprec értéke határozza meg.  Az utasítás után meg
+kell adni a numerikus változót, utána a stringet.
+
+Pl:
+ntostr x,s         // x int vagy flo, s string
+ntostr 5,s         // ennek nem sok értelme van
+
+
+STRTON
+Stringet számmá alakít.  A  szám  lehet  int  vagy flo.  Az utasítás
+után meg kell adni a stringet, utána a  numerikus  változót.   Ha  a
+string nem számot tartalmaz, akkor az eredmény 0 lesz.
+
+Pl.
+strton s,x         // s string, x int vagy flo
+strton "42",x      // ennek nem sok értelme van
+
+
+SUBSTR
+Egyik stringbõl  a  megadott  részt  a  másik  stringbe másolja.  Az
+utasítás  után  meg  kell  adni  a  forrást,  a  kezdõ  pozíciót,  a
+darabszámot, a cél stringet.  A pozíció és a darabszám int vagy  flo
+változó  vagy  konstans  lehet.  Ha a pozíció nagyobb 255-nél, akkor
+nem hajtja végre az  utasítást,  de  hibajelzést  nem okoz.  Max.  a
+255.  pozícióig másol a forrásból (mert nem lehet benne több), akkor
+is ha nagyobb darabszám van megadva.
+   Ha a darabszám 0, akkor  az  eredmény üres string lesz.  A string
+elsõ karaktere a 0. pozíción van, tehát a az elejétõl kell  másolni,
+akkor  a  0.  karakterrel kell kezdeni.  Ha a kezdõ másolási pozíció
+nagyobb mint a  másolandó  string  hossza,  akkor az eredmény valami
+memóriaszemét lesz.
+
+Pl:
+substr "ez a forrás string",4,1,s      // az s string "a" lesz
+substr "es a forrás string",6,6,s      // az s string "forrás" lesz
+
+
+LOG
+kiírja a megadott változót vagy konstanst a logfájlba
+
+Pl.:
+log x              // kiírja az x változó értékét
+log 5              // 5-öt ír ki
+log "szoveg"       // kiírja a megadott szöveget
+log s.time         // kiírja az aktuális idõt
+
+A változó lehet numerikus vagy string is.
+A flo típusú változó  kiírt  tizedesjegyeinek számát a konfigurációs
+fájlban lehet beállítani.
+
+
+LOGNL
+a  logfájlba egy soremelést tesz, így a következõ kiírás a következõ
+sorba kerül
+
+Pl.:
+lognl
+
+   A logfájlra  vonatkozó  utasítások  csak  akkor  mûködnek,  ha  a
+konfigurációs fájlban meg van adva a logfájl neve.
+
+
+
+Változók mentése:
+
+   A megadott változók értékét el tudja menteni fájlba, és a program
+indulásakor  ezeknek  a  változóknak  visszatölti  az értékét, így a
+fontosabb beállítások  értéke  megmaradhat.   Ezeket  a változókat a
+változódefiníciónál külön jelezni kell.  Minden program változóit  a
+programnév.var  fájlba  menti.   Ez  a fájl alapértelmezés szerint a
+program könyvtárában van,  de  a  konfigurációs  fájlban más elérési
+utat is meg lehet adni.  Ha nem létezõ elérési utat adunk meg, akkor
+az nem okoz hibajelzést, de a változómentés nem fog mûködni.
+
+   A mentés nem mûködik tömb változóra.
+
+   A változómentést a konfigurációs fájlban le lehet tiltani,  ekkor
+nem  menti el a változókat, és a már mentett változókat sem tölti be
+a program idulásakor.
+   Ha egy  változónak  kezdõérték  is  meg  van  adva,  és van hozzá
+mentett érték is, akkor  a  mentett  értéket  veszi  fel  a  program
+idulásakor.
+   A változó  értékét  akkor  menti  el  a  program,  ha  a  program
+megváltoztatta,  tehát  ha  új értéket adott neki.  Akkor is menti a
+pillanatnyi értékét, ha printv utasításban változtatjuk meg, vagy ha
+debug felületen adunk  neki  új  értéket.
+   Ha egy mentendõ változó  egyben  MSV-s vagy a grafikus felülethez
+kapcsolódik, akkor ha az MSV vagy a grafikus felület  (Linux)  felõl
+változik meg az értéke akkor is menti az új értékét.
+   A változómentés a fájlmûveletek miatt elég sokáig tart.  Ezért  a
+lehetõ  legkevesebb  változót  mentsük,  és  azok  értékét lehetõleg
+ritkán   változtassuk   meg,   mert   a   gyakori   változómentés  a
+programfutást nagyon lelassíthatja.  (a smartdrv.exe  program  tudja
+gyorsítani a fájlmûveleteket)
+
+
+
+Események logolása (logfájl):
+
+   Lehetõség  van az események fájlban rögzítésére.  Ez a logfájlban
+lehetséges.   Ebbe  a  fájlba   a   programok   is  írhatnak,  és  a
+vezérlõprogram is.  A logfájl nevét a konfig. fájlban kell  megadni.
+Ekkor  lehet  használni.   A  vezérlõprogram  logolását  külön lehet
+engedélyezni ezután.   A  vezérlõprogram  az  idulását, leállítását,
+programbetöltést, futásközbeni hibát ír bele  a  logfájlba.   Minden
+eseményhez beírja a dátumot és az idõpontot is.
+   A  programok  tetszõleges dolgot írhatnak a fájlba  (változókat,
+szöveget) a log utasítással.
+   Ha  a logfájl nincs megadva a konfig.  fájlban, akkor a logolásra
+vonatkozó utasítások nem csinálnak semmit.
+   A  logolás  a  fájlmûveletek   miatt  elég  sokáig  tart.   Ezért
+lehetõleg  ritkán  írjunk  a  logfájlba,  mert  a  gyakori  írás   a
+programfutást  nagyon  lelassíthatja.  (a smartdrv.exe program tudja
+gyorsítani a fájlmûveleteket)
+
+
+Kommunikáció MSV felé:
+
+   Az MSV felé kimenõ  változók  kiíródnak  az  MSV-re, ha a program
+megváltoztatja  a  változót.   Tömb esetén a 0. elem megváltoztatása
+után indul  a  kiírás.   Ha  a  debug  felületen  megváltoztatjuk  a
+változót,  akkor is elindul az MSV-re kiírás.  Ha a grafikus felület
+(linux) felõl  változtatják  meg  a  változót,  akkor  is elindul az
+MSV-re kiírás.
+
+   Az  MSV  indított  beolvasású bejövõ változóinak beolvasása akkor
+indul, amikor a  program  beolvassa  a  változót.   Tömb esetén a 0.
+elemet.  Ekkor még a régi  értéket  fogja  megkapni  a  program,  de
+elindul a beolvasás.  Hogy mikor érkezett be a változó új értéke, az
+a  státuszinformációból  tudható  meg.   Ha  periodikus beolvasású a
+változó, akkor  a  megadott  idõnként  kerül  bele  az új beolvasott
+érték.  A bejövõ változókat a program is átírhatja.
+
+   A változó státusza a "status(változó)"  formában  kérdezhetõ  le.
+Ezért  nem  lehet  használni  status  nevû  változót.   Ez a forma a
+legtöbb helyen használható  változó  helyett,  csak értéket adni nem
+lehet neki, de  szerepelhet  let  utasításban  jobbértékként  és  if
+utasításban is.  Minden változónak le lehet kérdezni a státuszát, de
+csak MSV-s változók  esetén  van  értelme.   Tömb  változó esetén az
+egész tömbre vonatkozik a status() értéke, ezért nem kell megadni  a
+tömbindexet. A status int típusú.
+
+pl.:
+a=status(meleg)
+print status(hideg)
+
+   A status lehetséges értékei:
+   0 = rendben
+   1 = modul nem elérhetõ
+   2 = a modulon levõ elem nem elérhetõ
+   3 = a modul és a hozzákötött elem közötti kommunikáció rossz
+   4 = a modulon levõ elem hibás
+   5 = beolvasás folyamatban
+   6 = msv túlterhelés miatt adatvesztés történt
+
+
+   Ha  a   kommunikációnak   túl   sok   feladatot   adunk,  vagy  a
+kommunikációs vonal hibás, és ezért lassabb a kommunikáció,  esetleg
+meg  is állt, akkor a kommunikáció túlterhelõdhet.  Ekkor nem minden
+adat fog megérkezni a címzett modulhoz, és nem minden adatot sikerül
+beolvasni.  Ha ilyen  veszély  fennáll,  akkor  a program a képernyõ
+alsó szélére kiírja az "MSV kommunikacio tulterhelve"  szöveget,  és
+ha  engedélyezett  a  rendszer  logolás,  akkor a logfájlba is.  Ezt
+legfeljebb óránként egyszer írja  ki,  akkor  is, ha többször is van
+ilyen eset.  Ekkor meg kell nézni, hogy mi okozta a gondot, és ha  a
+programba  tettünk  túl sok kommunikációt, akkor annak a számát kell
+csökkenteni.
+   Ha idõzített (periodikus) bemeneti változót nem tud  beolvasni  a
+program,   akkor   a   beállított   idõtõl   függetlenül  csak  25.5
+másodpercenként próbálkozik vele újra, hogy ne terhelje feleslegesen
+a kommunikációt.   Ha  sikerül  beolvasnia,  akkor  azontúl  ismét a
+megadott frissítési idõvel olvassa be.
+
+
+Kommunikáció grafikus felület felé:
+
+   A  Linux felé kimenõ változók elmennek a Linux felé, ha a program
+megváltoztatja a változót, vagy ha a debug felületen megváltoztatjuk
+az értékét, vagy ha  MSV-s  változó  is  egyben,  és az MSV felõl új
+érték érkezett, vagy ha a Linux küldött új értéket,  azt  vissza  is
+küldi  a  Linux felé ellenõrzésképpen.  Az sql log adatbázisba akkor
+kerülnek a változók, ha megváltozott az értékük az elõzõ kiírás óta.
+
+   A Linux felõl jövõ változók akkor kapnak új értéket, ha a Linuxos
+program  új  értéket  ad  neki.   Ezeket a változókat is átírhatja a
+program.
+
+   A Linuxos kommunikációt  ugyan  úgy  túl  lehet terhelni, mint az
+MSV-s kommunikációt.  Ekkor ugyan  úgy  kiírja  a  képernyõre  és  a
+logfájlba   a   hibát,   csak   "Linuxos  kommunikacio  tulterhelve"
+szöveggel.   A  teendõ   ugyan   az,   mint  az  MSV-s  kommunikáció
+túlterhelésekor.  A linux felõl másodpercenként legfeljebb 3 változó
+tud jönni.
+
+   Ha  a  program  linuxos  változatát   használjuk,   akkor   nincs
+kommunikáció,  hanem  a  változók  közvetlenül  belekerülnek  az sql
+táblába,  vagy  onnan  a   változóba.    Túl  sok  változó  átvitele
+lelassítja a programot.  Az sql táblából másodpercenként  legfeljebb
+10  érték  tud  átmenni  a változók felé.  Az sql táblák megegyeznek
+mind a két programváltozat esetében.
+
+   Ha  távoli  szerverre  mennek  az adatok, akkor ha induláskor nem
+elérhetõ, 1 percenként  újrapróbálkozik  a  kapcsolódással.  Ekkor a
+vezérlés megáll néhány másodpercre.  Ha  menet  közben  megszakad  a
+kapcsolat, akkor a vezérlõprogram leállhat arra az idõre, amég nincs
+kapcsolat.   Távoli sql szerver használatakor lelassul a program, az
+ídõzítések is eltolódnak.
+
+
+   A Linux oldalon az sqm nevû program végzi a kommunikációt  és  az
+sql  táblák  kezelését.  Ezt a programot általában az adott gépen le
+kell  fordítani.   A  fordításhoz  szükséges  a  mysql könyvtárainak
+telepítése.  Fordítani az sqf fájl indításával lehet.
+
+   Mûködése:
+
+Indítása: sqm 1 0 adatbázisnév hostnév usernév jelszó
+az 1 a sorosvonal számát jelenti, ez lehet más is
+a 0 a sorosvonali sebesség (0=115200, 1=57600, 2=38400, 4=19200, 6=9600)
+a hostnév localhost lehet, az usernév pl. root
+a jelszót nem kötelezõ megadni, csak ha szükséges az adatbázisba lépéshez.
+A program csak root jogokkal fog rendesen mûködni.
+
+Paraméter nélkül indítva kiírja a lehetséges parametéreket.
+
+
+   A Linuxban létrehozandó SQL táblák az adatátvitelhez:
+
+Az 1. tábla:
+MSV->linuksz irányhoz msvtolin a neve
+
+mezönév:            NEV                ADAT           MIEZ
+tipus:    varchar(45),extra:binary  float(8,2)     varchar(20)
+
+mezönév:   FAJTA       SZOVEG               ID                 IDO
+tipus:    char(1)    varchar(255)      int(11)/auto inc.    timestamp
+
+A NEV-ben van a változó neve, az ADAT-ban az adat, 2  tizedessel,  a
+MIEZ-ben lehet a leírás.  Ez hosszabb is lehet, igény szerint.  Vagy
+el  is  maradhat.   Az  ID azonosítja a sorokat.  A FAJTA jelzi hogy
+szám vagy string a változó.  Ha szám, akkor 'N' van benne, ha string
+akkor 'S'.  Ha a  változó  string,  akkor  a SZOVEG mezõben van.  Ha
+szám, akkor az ADAT-ban.  Az IDO-ben az utolsó módosítás ideje  van,
+(mikor  az  MSV  felõl  megérkezett  az adat) ezt a MYSQL teszi bele.
+Formája ééééhhnnóóppmm.
+
+   Ebben a táblában  nem  kell  létrehozni  a  változókat, azokat az
+átvitel során a program létrehozza.
+
+A 2. tábla:
+linuksz->MSV, lintomsv a neve
+
+mezönév:            NEV                ADAT        MIEZ
+tipus:    varchar(45),extra:binary  float(8,2)  varchar(20)
+
+mezönév:   FAJTA    SZOVEG      VALT        ID              IDO
+tipus:    char(1) varchar(255) char(1) int(11)/auto inc. timestamp
+
+
+A mezök szerepe ugyan az mint  az  elöbb.  A VALT-ba x-et kell írni,
+ha a HTML kezelö  megváltoztatta  az  értékét,  ebböl  tudja  meg  a
+kezelöprogram, hogy át kell küldeni az értékét.  Átküldés után törli
+belöle az x-et.
+
+A 3. tábla: ez csak logolás esetén kell
+log, msvlog a neve
+
+mezönév:            NEV                ADAT        MIEZ
+tipus:    varchar(45),extra:binary  float(8,2)  varchar(20)
+
+mezönév:   FAJTA    SZOVEG          ID             HONNAN       IDO
+tipus:    char(1) varchar(255) int(11)/auto inc.   char(1)   timestamp
+
+
+Ha több log tábla van,  akkor  a többi neve msvlog1...msvlog9 között
+lesz, attól függõen, hogy mennyi van.  Ha a log  táblák  daraboltak,
+akkor a nevük a dátummal kiegészül.
+
+A mezök szerepe ugyan az mint az elöbb.  A HONNAN-ba 'l' betû kerül,
+ha  a  linux  felõl  érkezett  a  változás,  'm'  ha  az  msv kezelõ
+programtól.
+
+A 4.35 programváltozat  után  a  táblákat  nem  kell  létrehozni,  a
+program indulásakor létrehozza azt a táblát, amelyik nincs.
+
+
+
+Kezelõfelület:
+
+   A kezelõfelületen keresztül lehet programokat betölteni, indítani
+és leállítani, a hibakeresõbe belépni.
+
+   Kezelése:
+   A program indulása  után  a  fõképernyõ  látható.  Ezen általában
+semmi sincs.  Ha fut egy (vagy  több)  program, akkor ide írja ki az
+üzeneteit. (a "print" és "printv" utasítással kiíratott dolgokat)
+
+   Programot betölteni az F5  gombbal  lehet.   Ekkor be kell írni a
+programot tartalmazó file nevét.  Az esetleges hibaüzenetek  vagy  a
+sikeres betöltés eredménye meg fog jelenni a képen.
+   Hibakeresõ  módba  az  F7  gombbal  lehet  jutni.
+   A  betöltött  programokat  megnézni,  indítani,  leállítani az F3
+gombbal lehet.
+   Visszalépni a fõképernyõre az F2 gombbal lehet.
+   A programból kilépni az F10 gombbal lehet.
+
+Hibakeresõ felület:
+
+   Ide az F7 gombbal lehet jutni.
+   Itt  lehet megnézni néhány (max.40) megadott változó értékét.  Be
+kell  írni  a program és a változó nevét egy ponttal elválasztva, és
+akkor   megjelenik   a   képernyõ   következõ   pozíciójában.   pl.:
+futes.meleg Ekkor a futes program meleg nevû változója kerül  fel  a
+listára.    Tömbelemet   is   lehet   nézni   a   következõ   módon:
+futes.melegek[5] A tömbelemet szóközök nélkül kell megadni.
+
+   Lehetõség van lépésenkénti programvégrehajtásra is.  Ebbe a módba
+az  F7  gomb megnyomásával lehet váltani.  A képernyõ alján írja ki,
+hogy milyen módban van.   (folyamatos vagy lépésenkénti végrehajtás)
+Ez azt jelenti, hogy minden programot végrehajt  egyszer,  és  utána
+megáll.   A SPACE megnyomására ismét végrehajtja az összes programot
+egyszer.
+
+   Meg lehet változtatni a változók értékeit is.  F6 megnyomása után
+a kijelölõ mutatót (inverz kiírás) a kivánt változóra kell  vinni  a
+le-  és  felnyilakkal,  ekkor be kell írni a változó kívánt értékét,
+majd meg kell nyomni  az  ENTER  gombot.   Ekkor  a változó értéke a
+megadott lesz.
+
+   Törölni a változót a listából a DEL gombbal lehet.
+
+   Hibakeresõ módból az F2 gombbal lehet visszalépni a fõképernyõre,
+vagy az F10 gombbal ki lehet lépni a programból.
+
+
+   Programkezelõ felület:
+
+   Ide az F3 gombbal lehet jutni.
+   Itt  lehet  megnézni  a  betöltött  programokat,  elindítani   és
+leállítani õket.
+
+   A  képen megjelennek a betöltött programok nevei.  Mellette pedig
+a státusza.
+A státusz lehetséges értékei:
+megy: ekkor a program fut
+leallitva: ekkor nem fut, mert le lett állítva
+hiba volt: ekkor nem fut, mert valami hiba volt és ezért leállt
+nem mehet: ekkor nem fut, mert nincs futtatható része (program)
+
+   Ha  a  kijelölt  programon  'ENTER'-t  nyomnak,  akkor  a program
+megáll, ha futott, vagy elindul ha le volt állítva.   A  hiba  miatt
+megállt  program  is  újra indul.  A kijelölést mozgatni a le és fel
+nyilakkal lehet.
+
+   Visszalépni a fõképernyõre az F2 gombbal lehet.
+   A programból kilépni az F10 gombbal lehet.
+
+
+Konfigurációs fájl:
+
+   A  program  indulásakor  a  szükséges  beállítási  adatokat   egy
+konfigurációs  fájlból  tölti be.  A fájl neve alapesetben "ms.cnf".
+Lehet más neve is a fájlnak,  de akkor azt a program indításakor meg
+kell adni paraméterként.
+   pl.: ha a konf.  fájl neve "konfig.fjl" akkor a programot az  "mp
+konfig.fjl" formában kell indítani.
+   Ha nincs meg a megadott vagy az  alapértelmezett  konfig.   fájl,
+nem  okoz  hibát,  de akkor nem fog menni a kommunikáció az MSV és a
+grafikus felület felé.
+
+   A konfigurációs fájl felépítése:
+Meg kell adni az MSV-hez  kapcsolódó sorosport címét és sebességét a
+következõ formában:
+
+msvport com1 19200 t=8
+
+A com1 a sorosport száma, ami com1-com4 lehet.  A 19200 a sebessége,
+ami 9600, 14400, 19200, 28800, 38400, 57600, 115200 lehet.   A  "t="
+után  az  MSV  port  idõállandóit lehet megadni ha nem a sebességhez
+tartozót szeretnénk használni.   Ezt  nem  kötelezõ  megadni, mert a
+portsebességhez ez automatikusan beállítódik.  A 8-as értéket a régi
+modulokhoz kell használni.
+A  4.34-es  programtól  kezdve  linux esetén USB portra kötött soros
+illesztõvel  is  megy,  ekkor  usb1,  usb2,  usb3,  usb4  adható meg
+portnak.
+
+   Az msvport definícióját még a  programbetöltések  és  a  grafport
+elõtt kell megadni.
+
+   A linuxos program esetében  a sorosvonali kezelõ IC-nek lehetõleg
+16550 kompatibilisnek kell lennie.  Ha nem az, akkor is mûködni fog,
+de könnyebben lehetséges adatvesztés.   Erre  a  program  induláskor
+figyelmeztet.
+
+
+A grafikus portot hasonlóképpen kell konfigurálni:
+
+grafport com4 9600
+
+   Értelmezése  ugyan  az,  mint  az  msvport  esetén.   Itt   nincs
+idõállandó.  A programbetöltések elé kell tenni.
+
+   A  portkiosztásnál  arra  kell  figyelni,  hogy  az  msport  és a
+grafport különbözõ megszakításra kerüljenek.  Ez azt  jelenti,  hogy
+nem lehetnek az 1,3 és a 2,4 com porton.
+
+   Linuxos program esetén  a  grafport  nem használható, hibát okoz.
+Helyette az sql tábla adatait kell megadni a következõ formában:
+
+sql=adatbázis hostnév port usernév jelszó
+
+   A jelszót nem kell  feltétlenül  megadni,  csak ha szükséges.  Az
+sql tábla adatait csak akkor kell megadni, ha szükség  van  változók
+átvitelére.   Ha  nem  kell,  akkor sql táblák nélkül is fog menni a
+program.
+
+   Ha szükség van az  sql  táblában  a  logolásra,  akkor azt az sql
+definíció elõtt meg kell adni a következõ formában: linlog=yes.
+A 4.35 programváltozat után  a  yes  helyett  egy  0-9 közötti szám is
+megadható.  Ha számot adunk meg, akkor több  msvlog  tábla  készül,  0
+vagy  yes  esetén  csak az msvlog, ha nagyobb a szám, akkor msvlog1,
+msvlog2...  stb.   is,  amekkora  számot  megadtunk, annyi logtáblát
+kezel a program.
+
+   Ha  darabolni   kell   idõnként   a   logtáblákat,   akkor  azt  a
+következõképpen kell megadni:
+   
+   linlogs 3 d
+   
+ahol a 3 a darabolandó msvlog tábla száma, ami 0-9  lehet.   A  0  az
+msvlog  táblára  vonatkozik,  a  nagyobb  számok  a  megadott  számú
+táblára.  A d a darabolás idejét adja meg, a lehetséges értékek:
+
+d ez napi darabolás, a tábla neve: msvlog3_20090319  (teljes dátum)
+w ez heti darabolás, a tábla neve: msvlog3_200912W   (év, és a hét száma, +W)
+m ez havi darabolás, a tábla neve: msvlog3_200903    (év, hónap)
+y ez évi darabolás,  a tábla neve: msvlog3_2009      (csak év)
+
+Minden  darabolandó logtáblához csinálni kell egy linlogs bejegyzést.
+Az éppen  használt  tábla  neve  mindig  az  aktuális  dátum szerint
+változik.  (a régiek persze  megmaradnak)  A  már  darabolás  nélkül
+készült táblát nem fogja utólag feldarabolni, csak a továbbiakat.
+
+Ez csak a linuxos programban mûködik.
+
+
+   Meg lehet adni, hogy a változónév és a programnév között milyen
+elválasztó karakter legyen az sql táblákban. Alapértelmezés a . (pont)
+Ennek módja:
+
+sqlsep=@
+
+A @ helyén lehet az elválasztó karakter. (de lehet @ is)
+Ha nincs megadva semmi, akkor az alapértelmezett . lesz.
+Hatása  csak  az   sql   táblákra   vonatkozik,  a  programban  ettõl
+függetlenül a pontot kell használni.
+
+
+   Meg  lehet  adni,  hogy  el  lehessen-e érni a debug funkciókat a
+programban.  A következõ módon:
+
+debug=yes
+vagy
+debug=no
+
+Ha  a  "yes"-t  adjuk  meg,  akkor  az  összes  funkció  elérhetõ  a
+programban.   "no" esetén nem lehet programot betölteni, leállítani,
+nem megy a változók figyelése és újértékadása.  Ha nem adjuk meg ezt
+a paramétert, akkor az alapértelmezése "yes".
+
+
+   Meg lehet  adni,  hogy  ki  lehessen-e  lépni  a  programból.   A
+következõ módon:
+
+exit=yes
+vagy
+exit=no
+
+Ha "yes", akkor az F10 gombbal ki lehet lépni a programból, ha  "no"
+akkor nem.  Alapértelmezése "yes".
+
+
+   Meg lehet adni, hogy mentse-e fájlba a  kijelölt  változókat.   A
+következõ módon:
+
+varsave=yes
+vagy
+varsave=no
+
+Ha   "yes",   akkor   a   megadott   változókat   menti  a  program.
+Alapértelmezése "yes".
+
+   Meg lehet adni a mentett változók könyvtárát a következõ módon:
+
+varpath=path
+
+pl.: varpath=c:\temp\
+
+A megadott könyvtárban  fogja  elhelyezni  a  mentett változókat, és
+onnan tölti  õket  vissza.   Figyelni  kell,  hogy létezõ könyvtárat
+adjunk meg, mert nem létezõ könyvtár megadása nem okoz  hibajelzést,
+de nem fog menni a változómentés.
+   Ha  nem  adunk meg könyvtárat, akkor az aktuális könyvtárba menti
+el a változókat.
+
+
+Meg  lehet  adni  a  flo  típusú  számok  kiírásának  pontosságát  a
+következõ módon:
+
+pprec=3
+
+A megadott számú tizedesjeggyel fogja  kiírni minden print és printv
+utasítással kiírt flo típusú számot.  A log  fájlba  is  a  megadott
+számú  tizedesjeggyel  írja  ki  a  flo számokat.  A debug képernyõn
+látható  kiírást  ez  nem  érinti.   A  számolás  pontosságára sincs
+hatással.  Alapértéke 2.
+
+
+Meg lehet adni a  logfájl  nevét  (elérési úttal együtt) a következõ
+módon:
+
+logfile=c:\temp\logf
+
+   Ha a logfájl neve meg van adva a konfig.  fájlban, az egyben  azt
+is  jelenti,  hogy  a  logfájlra  vonatkozó  utasítások  mûködnek  a
+programban, ha nincs megadva, akkor a logfájlra vonatkozó utasítások
+nem mûködnek.
+
+
+Meg  lehet  adni,  hogy  a  vezérlõprogram  írjon-e  a  logfájlba  a
+következõ módon:
+
+syslog=yes
+vagy
+syslog=no
+
+Ha "yes", akkor a  vezérlõprogram  beírja  a fontosabb eseményeket a
+logfájlba.
+
+Alapértelmezése "no".
+
+
+Meg lehet adni a porthelyettesítõ  fájl nevét (elérési úttal együtt)
+a következõ módon:
+
+ports=c:\temp\portcs
+
+   Ha a porthelyettesítõ fájl neve meg van adva a konfig.   fájlban,
+az  egyben  azt is jelenti, hogy ha létezik a fájl, akkor a megadott
+portcímeket lecseréli.  Ha nincs meg a megadott fájl, vagy hibás név
+lett megadva, akkor a program hibajelzéssel megáll.
+
+
+   Ezeket a fájlban bárhol  meg  lehet  adni,  akár többször is, bár
+nincs értelme,  mert  mindig  az  utolsó  érték  marad érvényes.  Ha
+valamelyik paraméter nincs megadva,  akkor  az  alapértelmezése  lép
+életbe.
+
+   Programbetöltés elõtt lehet konstansokat definiálni  a  következõ
+program  számára.   Ezt  ugyan  úgy  lehet,  mint a programon belül.
+Tehát a "defines" szóval  kell  kezdõdnie, és az "enddefines" szóval
+végzõdnie, köztük pedig a definíciónak kell lennie.
+   Ezután "defines" lehet még a  programban  is,  az  hozzáadódik  a
+konfig.  fájlban definiáltakhoz.
+   A  definiált  konstansok  csak az elsõ programbetöltésig maradnak
+érvényben, a  következõ  programbetöltéskor  már  nem érvényesek.  A
+következõ programhoz új konstansokat lehet definiálni.
+
+Be lehet tölteni programokat a következõ módon:
+
+load programnév
+
+pl.:
+load szoba
+load futes
+
+Ekkor  induláskor  betölti  a  "szoba" és a "futes" nevû fájlokból a
+programot.
+
+A konfigurációs fájlban megjegyzést  lehet  írni  "//" jel után, úgy
+mint a programfájlban.   Az  ezután  írt  szöveggel  a  program  nem
+foglalkozik.
+
+A  fájlban  nem  szükséges  minden  paramétert megadni.  A kihagyott
+paraméterek  alapértelmezett  értéket   kapnak.   Ha  nincs  megadva
+valamelyik kommunikációs port, akkor  az  adott  irányba  (MSV  vagy
+grafikus  felület)  nem  fog  menni  a  kommunikáció.
+pl.:
+
+msvport com1 115200         // MSV port
+grafport com2 19200         // linuxhoz
+debug=no                    // nincs debuggolás
+exit=no                     // nem lehet kilépni
+varsave=yes                 // van változómentés
+varpath=c:\temp\var\        // ide menti a változókat
+pprec=1                     // 1 tizedesjegy van flo kiíráskor
+logfile=c:\temp\logf        // logolás engedve ebbe a fájlba
+syslog=yes                  // vezérlõprogram logolása engedve
+ports=pcsere                // portcsere fájl az indító könyvtárban
+
+load fovezer                // ezeket a programokat tölti be 
+load futes
+load hutes
+
+defines                     // 1. szobához definíciók
+   nev=szoba1
+   port=3
+   meleg=23
+enddefines
+load szoba
+
+defines                     // 2. szobához definíciók
+   nev=szoba2
+   port=4
+   meleg=20
+enddefines
+load szoba
+
+
+   A konfigurációs fájlban a kulcsszavakat kisbetûvel kell írni.
+
+   Ha nem  történt  hiba  a  konfigurációs  fájl értelmezése közben,
+akkor a program elindul.  Ha volt valami hiba, akkor csak  egy  gomb
+lenyomása után megy tovább.
+
+   Ha a konfigurációs  fájlban  nem  töltöttünk  be minden szükséges
+programot, akkor  az  F5  használatával  további  programokat  lehet
+betölteni.
+
+
+
+   A program Windows  és  OS/2  alatt  csak kommunikáció nélkül fut.
+(nem kell megadni a konfig.  fájlban az MSV  és  Linux  kommunikáció
+paramétereit) Kommunikációval együtt csak DOS alatt megy.
+
+
+Portcsere fájl:
+
+   Modulcsere esetén ebben a fájlban lehet megadni a  cserélt  modul
+számát,  amit  a  program betöltéskor használni fog.  Így nem kell a
+programban átírni a cserélt  modul  számát.   A fájl nevét a konfig.
+fájlban  kell  megadni.   Ha  nem  létezik  a  fájl,  az  nem   okoz
+hibajelzést.
+
+   A fájl felépítése:
+
+Meg kell adni vesszõvel elválasztva a  helyettesítendõ  modulportot,
+utána  "="  jel kell, és meg kell adni az új modulportot ugyan olyan
+formában.  Megjegyzést lehet írni a sorba "//" jel után. pl.:
+
+10,20=10,21         // megjegyzés is írható a sorba
+30,5=42,88
+10,21=11,5          // ismételt csere
+
+   Többszörös  csere lehetséges, tehát a helyettesítõ modulportot is
+ki lehet cserélni.  pl.  ha a 10,20 portot kicséljük 10,21-re, akkor
+utána a 10,21 portot is ki lehet cserélni.
+
+   Ugyan  azt  a  portot csak egyszer lehet cserélni, a 2. csere nem
+fog mûködni.  pl.  ha a  10,20  portot kicseréljük valamire, akkor a
+10,20 portot másodszor már nem lehet cserélni.
+
+   Túl sok cserét  nem  érdemes  megadni,  mert  a  programbetöltést
+lassítja.
+
+
+
+   Használható modulportok
+
+
+od       digitális kimenet 1 vagy 8 bites
+
+OD8 vagy más 1 bites kimeneti modul 1 portja, ekkor 0 vagy 1 értéket
+lehet kiküldeni. 0 esetén kikapcsol, más érték esetén be.
+Ha  az  OD8  vagy más modul közös portját használjuk, akkor 0-255 -t
+lehet kiküldeni.  A közös port a régi OD8 moduloknál a 0, az újaknál
+a 9.
+
+
+id       digitális bemenet 1 vagy 8 bites
+
+id8 vagy más 1 bites bemeneti modul 1 portja, 0 vagy 1 lehet.
+Ha az ID8 modul közös portját  használjuk,  akkor  0-255  lehet.   A
+közös port a régi moduloknál a 0, az újaknál a 9.
+
+
+it       DS1820 vagy TCN75 hõmérõ bemenet
+
+IT8 vagy más hõmérõ kezelõ modul 1 hõmérõje.
+Értéke -55 és 125 között lehet 0.5 fok felbontással.
+
+
+itu      DS18B20 hõmérõ bemenet
+
+Az MP 4.42 programváltozat után.
+
+Csak IT8, KIJTK, SENSM2 modul DS18B20 hõmérõje.
+Értéke -55 és 125 között lehet 0.0625 fok felbontással.
+
+   Ha a modulon a hõmérõhõz tartozik it  port  is,  akkor  egyszerre
+mûködnek.   Tehát mind a két porton (it és itu) is beolvasható ugyan
+az a hõmérõ.  Ha régi, DS1820 vagy DS18S20 hõmérõ van rákötve, akkor
+az itu porton ugyan az olvasható, mint az it-n.
+
+   Ha DS18B20  hõmérõ  van  rajta,  akkor  az  it  porton  ugyan úgy
+olvasható, mint a régi hõmérõ, de a felbontása  csak  0.5  fok.   Ha
+régi  hõmérõt  olvasunk be itu porton, akkor, annak a felbontása itt
+is csak 0.5 fok.
+
+
+iar      analóg bemenet 8 bites (régi)
+
+IA8 vagy más 8 bites analóg bemeneti modul 1 portja.
+Értéke 0-255 lehet.
+
+
+ia       analóg bemenet 10 bites
+
+IA8 (új) vagy más 10 bites analóg bemeneti modul 1 portja.
+Értéke 0-1023 lehet.
+
+
+oa       analóg kimenet 8 bites
+
+OA8 vagy más analóg kimeneti modul 1 portja.
+Értéke 0-255 lehet.
+
+
+au       hangerõszabályozó modul (8*2 port) 2 portja
+
+AU8 hangerõszabályozó modul egy 2 csatornás portja
+Ezt 2 elemes tömbként kell  kezelni.   A  0. elem írásakor íródik ki
+mind a 2 port.
+Értéke 0-64 lehet.
+
+
+rdn      távirányító modul kijelzõjére 3 jegyû szám
+
+TIV távirányító modul kijelzõjére  -99  és  999 közötti számot lehet
+kiírni.
+
+
+rdnd     távirányító modul kijelzõjére 3 jegyû szám 1 tizedesssel
+
+TIV távirányító modul kijelzõjére -9.9 és 99.9 közötti számot  lehet
+kiírni.
+
+
+rdt      távirányító modul kijelzõjére 3 betûs szöveg
+
+TIV  távirányító  modul  kijelzõjére  a  számok  formájában megadott
+szöveget lehet kiírni.  3 elemes  tömbnek kell definiálni.  A számok
+a kijelzõ szegmenseit jelentik.  A 0.  elem  írásakor  íródik  ki  a
+szöveg.
+
+
+sto      string küldése MSV-re
+
+Stringet fogadni képes  eszközre  (pl.   kijelzõ,  sms modul) szöveg
+kiküldése.  A stringnek legfeljebb az elsõ 127 karakterét küldi ki.
+
+
+sti      string fogadása MSV-rõl
+
+Stringet adni  képes  modulról  (pl.   sms  modul)  szöveg fogadása.
+Legfeljebb 127 karakter hosszú lesz.
+
+
+szol     szol modulra több lejátszandó szám küldése
+
+SZOL modulnak több szám  egymásutáni lejátszására parancs.  Max.  10
+dolgot lehet megadni  egymás  után.   A  0.  elemmel  kezdi,  a  10.
+elemmel  fejezi  be.  Ha kevesebbet kell lejátszani, akkor az utolsó
+utáni  elemnek  0-t  kell  megadni.   10  [9]  elemes  tömbnek  kell
+definiálni.  A  0.  elem  megadásakor  indul  a  lejátszás, ezt kell
+utoljára megadni.
+
+
+ian      újabb IA8 modul 1 portja
+
+Az új IA8  modulból  beolvasható  szám.   Értéke -2097153 és 2097152
+között lehet. flo változóba érdemes beolvasni.
+
+
+
+A régi modulok címének 71-el kell kezdõdnie.
+pl.
+
+int lepvil m od 71,1,3
+flo szobameleg m iar 71,6,4,100
+int hangero1[1] m au 71,40,1
+
+
+

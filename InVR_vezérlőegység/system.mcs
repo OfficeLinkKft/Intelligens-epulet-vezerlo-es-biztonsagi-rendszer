@@ -1,0 +1,137 @@
+progname system		// 
+
+// futas helyenek, datum, ido kiirasa a kepernyore
+// kepernyotorles
+
+variables
+//futassebesseg segedvaltozo
+	int t=0
+
+
+//rendszervaltozok
+
+	//idok rendszerváltozók									
+	int year_InVRstart g			//InVR program futás kezdete, év
+	int month_InVRstart g			//hónap
+	int day_InVRstart g			//nap
+	int hour_InVRstart g			//óra
+	int minut_InVRstart g			//perc
+	int sec_InVRstart g			//másodperc
+
+	int year_InVR				//InVR program futás ideje, év
+	int month_InVR 			//hónap
+	int day_InVR 				//nap
+	int hour_InVR 				//óra
+	int minut_InVR 			//perc
+	int sec_InVR 				//másodperc
+
+
+	int c=0		//segedvaltozo
+	int c10=0
+
+
+
+endvariables
+
+
+
+program
+
+
+//rendszeridok
+
+	//rendszeridok indulaskor
+	if c=0 then
+	c=1	//csak egyszer!!	
+				
+		year_InVRstart=s.year		//InVR program futás kezdete, év
+		month_InVRstart=s.month	//hónap
+		day_InVRstart=s.day		//nap
+		hour_InVRstart=s.hour		//óra
+		minut_InVRstart=s.min		//perc
+		sec_InVRstart=s.sec		//másodperc
+	
+	endif	
+
+	//futasido oraban
+	if s.hourt=1 then
+		c10=c10+1		
+	endif
+
+
+//kepernyokezeles	
+	if s.sect=1 then	// ez masodpercenkent 1*1
+		cls
+
+		gotoxy 1,1
+		print "InVR system 4.0 / mhs001erd"
+
+	//rendszerinditas ideje
+		gotoxy 33,1
+		print "Start: "
+		print year_InVRstart		//InVR program futás kezdete, év
+		print "."
+		print month_InVRstart		//hónap
+		print "."
+		print day_InVRstart		//nap
+
+		print " "
+		print hour_InVRstart		//óra
+		print ":"
+		print minut_InVRstart		//perc
+		print ":"
+		print sec_InVRstart		//másodperc
+
+	//futasido kiirasa, órában
+		gotoxy 58,1
+		print "/ "
+		print c10
+		print " ora"
+
+
+
+	//datum es ido kiirasa
+		gotoxy 50,25	//datum kiiras
+		print s.date
+				//a het napjanak kiirasa
+		if s.dofw=0 then
+			print " hetfo"
+		endif
+		if s.dofw=1 then
+			print " kedd"
+		endif
+		if s.dofw=2 then
+			print " szerda"
+		endif
+		if s.dofw=3 then
+			print " csutortok"
+		endif
+		if s.dofw=4 then
+			print " pentek"
+		endif
+		if s.dofw=5 then
+			print " szombat"
+		endif
+		if s.dofw=6 then
+			print " vasarnap"
+		endif
+
+		gotoxy 72,25	//ido kiirasa
+		print s.time
+
+
+	endif
+
+//lefutasszam masodpercenkent
+
+t=t+1
+if s.sect=1 then
+	gotoxy 25,25
+	print "futasseb.:"
+	print t
+	print " cikl/sec"
+	t=0
+endif
+
+
+endprogram
