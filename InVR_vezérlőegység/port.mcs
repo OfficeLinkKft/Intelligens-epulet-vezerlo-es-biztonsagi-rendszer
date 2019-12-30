@@ -1,0 +1,1372 @@
+progname port		// a rendszerben levo modulok leirasa es vizsgalata
+
+//itt kell felsorolni a modulokat portokkal egyutt,
+//az InVR egysegek es modulok helye az epuletben
+
+//hibakezeles, hibas eszkozok eseten hiba kiirasa
+//es hibas port helyettesitese?
+
+//kimenetek visszaolvasasa a folyamatos mukodes erdekeben, 
+//azaz kozpont reset eseten folyamatos mukodes legyen
+
+//msv kabelek:: (jelölve minden modul neve után az elhelyezés elõtt)
+// (1) : padlásra, - garázs
+// (2) : gerincvezeték, eredeti gyengeáramú csövezésben:
+//	nappali, nappali elosztó
+// (3) : elõtérbe, majd kapuhoz. kamera tápok is
+// (4) : szekrény modulok, helyben
+
+variables
+
+int err=0	//hibakod, ha nulla, nem volt hiba
+
+//modulportok valtozo-elnevezesi szabalyai:
+//elso betu: o-kimenet, i-bemenet, r-kert adat, l-hatarertek
+
+//masodik betu: lm	fenymero
+//		te	homero,
+//		li	fenyero 
+
+//		so	konnektor
+//		sw	nyomogomb
+//		co	erintkezo
+//		ms	mozgaserzekelo
+
+//		lo	zar
+
+//		va	futotest szelep
+//		ve	ventillator
+//		po	halozati feszultseg
+
+//		dpt	TIV kijelzo
+//		dpk	KIJMK kijelzo
+
+
+//cim ertelmezese: 
+//	cim elso es masodik bajtja
+//	port cime
+//	port frissitesi erteke tizedmasodpercben
+
+
+//egyseg	cim	megnevezes			hely	
+//----------------------------------------------------------------------------------------
+//kozpont					konyvtar, InVR szekreny
+
+//epulet
+
+	//halozati feszultseg				eloter						
+//	int ipo_nappaliaram 				//powmet, elõszoba
+//	int ipo_ejszakaiaram=0 g 			//ID4, mosokonyha
+
+	//riaszto
+
+	//ajtonyitas
+	int isw_epuletzaras				// 0/1
+
+	//hatsoajto
+
+	//kiskapu
+
+	//nagykapu
+
+	//belepteto
+	//KIJMK		0,0				eloter	
+	flo ite_eloter g			//homero bemenet
+//	flo ite_eloter m it 0,0,1,100 g			//homero bemenet
+//	int ilm_eloter m ia 0,0,6,10 g 			//fenyerzekelo bemenet
+//	str odpk1_eloter m sto 0,0,7 g 			//Kijelzo 1. sora
+//	str odpk2_eloter m sto 0,0,8 g			//Kijelzo 2. sora
+//	str odpk_eloter m sto 0,0,9 g 			//teljes kijelzo
+	//	int	od			10		od 0/1		kimenet
+	//	int	id			10		id 0/1		visszaolvasas
+	//	int	od			11		od 0/1		kimenet
+	//	int	id			11		id 0/1		visszaolvasas
+	//	int(2)				20		2 elemes tomb		infra tanitas inditasa
+//	int odpkd_eloter m od 0,0,21 g 			//kijelzo idozitett kikapcsolasa, 1-255, 1/8sec
+//////IDEIGLKENES
+	int isw_belepteto  				//belepteto
+	int osw_belepteto  				//visszairas
+	int isw_belepteto_juli 				//belepteto juli gomb
+	int osw_belepteto_juli  			//visszairas
+	int isw_belepteto_marci 			//belepteto marci gomb
+	int osw_belepteto_marci 			//visszairas
+	int isw_belepteto_bori 				//belepteto bori gomb
+	int osw_belepteto_bori 				//visszairas
+	int isw_belepteto_anni 				//belepteto anni gomb
+	int osw_belepteto_anni 				//visszairas
+
+//	int isw_belepteto m id 0,0,22,10 g 		//belepteto
+//	int osw_belepteto m od 0,0,22 g 		//visszairas
+//	int isw_belepteto_juli m id 0,0,23,10 g		//belepteto juli gomb
+//	int osw_belepteto_juli m od 0,0,23 g 		//visszairas
+//	int isw_belepteto_marci m id 0,0,24,10 g	//belepteto marci gomb
+//	int osw_belepteto_marci m od 0,0,24 g		//visszairas
+//	int isw_belepteto_bori m id 0,0,25,10 g		//belepteto bori gomb
+//	int osw_belepteto_bori m od 0,0,25 g		//visszairas
+//	int isw_belepteto_anni m id 0,0,26,10 g		//belepteto anni gomb
+//	int osw_belepteto_anni m od 0,0,26 g		//visszairas
+	//	int	id			27	10			2. bemenethez tartozo novelt valtozo
+	//	int	od			27				visszairas
+	//	int	id			28	10			1. Infrajel
+	//	int	od			28				visszairas
+	//	int	id			29	10			2. Infrajel
+	//	int	od			29				visszairas
+	//	int	id			30	10			3. Infrajel
+	//	int	od			30				visszairas
+	//	int	id			31	10			4. Infrajel
+	//	int	od			31				visszairas
+	//	int	id			32	10			5. Infrajel
+	//	int	od			32				visszairas
+	//	int	id			33	10			6. Infrajel
+	//	int	od			33				visszairas
+	//	int	id			34	10			7. Infrajel
+	//	int	od			34				visszairas
+	//	int	id			35	10			8. Infrajel
+	//	int	od			35				visszairas
+
+	//OD8R		71,0				(1) muhely ablak mellett	
+//	int osw_1bojler_nappaliaram m od 71,0,1 g	//1. bojler ki/be kapcsolo, nappali aram
+//	int isw_1bojler_nappaliaram m id 11,0,1,100 g	//1. bojler ki/be allapot, nappali aram
+//	int osw_1bojler_ejszakaiaram m od 71,0,2 g	//1. bojler ki/be kapcsolo, ejszakai aram
+//	int isw_1bojler_ejszakaiaram m id 71,0,2,100 g	//1. bojler ki/be allapot, ejszakai aram
+//	int osw_2bojler_nappaliaram m od 71,0,3 g	//2. bojler ki/be kapcsolo, nappali aram
+//	int isw_2bojler_nappaliaram m id 71,0,3,100 g	//2. bojler ki/be allapot, nappali aram
+//	int osw_2bojler_ejszakaiaram m od 71,0,4 g	//2. bojler ki/be kapcsolo, ejszakai aram
+//	int isw_2bojler_ejszakaiaram m id 71,0,4,100 g	//2. bojler ki/be allapot, ejszakai aram
+	//	int	od	71,0,5		od		
+	//	int	id	71,0,5,10	id		
+	//	int	od	71,0,6		od		
+	//	int	id	71,0,6	10	id		
+	int osw_2kazan m od 71,0,7 g			//2. kazan ki/be kapcsolo
+//	int isw_2kazan m id 71,0,7,100 g		//2. kazan ki/be allapot
+	int osw_1kazan m od 71,0,8 g			//1. kazan ki/be kapcsolo
+//	int isw_1kazan m id 71,0,8,100 g		//1. kazan ki/be allapot
+										
+	//IAR8		71,5				(1) muhely ablak mellett	
+	int ite_1kazan_visszateroviz m id 71,5,1,100	//1. kazan visszatero viz homerseklet
+	int ite_1kazan_eloremenoviz m id 71,5,2,100	//1. kazan eloremeno viz homerseklet
+	int ite_2kazan_visszateroviz m id 71,5,3,100	//2. kazan visszatero viz homerseklet
+	int ite_2kazan_eloremenoviz m id 71,5,4,100	//2. kazan eloremeno viz homerseklet
+//	flo ite_1bojler_also m iar 71,5,5,100 g		//1. bojler also homero
+//	flo ite_1bojler_felso m iar 71,5,6,100 g	//1. bojler felso homero
+//	flo ite_2bojler_also m iar 71,5,7,100 g		//2. bojler also homero
+//	flo ite_2bojler_felso m iar 71,5,8,100 g	//2. bojler felso homero
+
+//mosokonyha	
+	//KIJMK		60,20				mosókonyha dobozban
+	flo ite_mosokonyha_msvdoboz m it 60,20,1,100	//mosókonyha msv doboz
+//not	int ilm_mosokonyha m ia 60,20,6,10 		//fenyerzekelo bemenet
+	str odpk1_mosokonyha m sto 60,20,7 		//Kijelzo 1. sora
+	str odpk2_mosokonyha m sto 60,20,8		//Kijelzo 2. sora
+	str odpk_mosokonyha m sto 60,20,9 		//teljes kijelzo
+
+
+	//IT8		20,7				mosókonyha dobozban
+	int ite_hidegviz m it 20,7,1,600 g		//hidegviz, ami a bojlerbe megy
+	int ite_melegviz m it 20,7,2,600 g		//gázbojlerbõl kilépõ melegvíz
+	int ite_melegviz_vissza m it 20,7,3,600 g	//cirkulációból vissztérõ melegvíz
+	int ite_1bojler_also m it 20,7,4,600		//1.bojler alsó hõmérséklet
+	int ite_1bojler_felso m it 20,7,5,600		//1.bojler felsõ hõmérséklet
+	int ite_2bojler_also m it 20,7,6,600		//2.bojler alsó hõmérséklet
+	int ite_2bojler_felso m it 20,7,7,600		//2.bojler felsõ hõmérséklet
+	int ite_mosokonyha m it 20,7,8,600		//mosókonyha levegõ hõmérséklet
+
+	//OD4		10,1				mosókonyha dobozban
+	int osw_2bojler_nappaliaram m od 10,1,1		//2. bojler ki/be kapcsolo, nappali aram
+	int osw_2bojler_ejszakaiaram m od 10,1,2	//2. bojler ki/be kapcsolo, ejszakai aram
+	int osw_1bojler_nappaliaram m od 10,1,3		//1. bojler ki/be kapcsolo, nappali aram
+	int osw_1bojler_ejszakaiaram m od 10,1,4	//1. bojler ki/be kapcsolo, ejszakai aram
+
+	int ipo_ejszakaiaram m id 10,1,10,600 g		//ejszakai aram meglete	
+
+	//melegvíz keringetõszivattyú, kék konnektor
+	//VIKT		30,1				mosókonyha 
+	int oli_melegviz_keringeto=60 m od 30,1,1	//melegviz keringeto szivattyu
+	
+	
+//elõszoba fogyasztasmero - POWMET
+	//POWMET	80,1			(3) villanyóra felett, biztosítéktábla alatt
+	int ipow_1 m ia 80,1,1,100 g		//foldszint vilagitas, teljesítmény W-ban. Csak olvasható, ia típus.
+	int ipow_2 m ia 80,1,2,100 g		//foldszint konnektorok, teljesítmény W-ban. Csak olvasható, ia típus.
+	int ipow_3 m ia 80,1,3,100 g		//emelet vilagitas, teljesítmény W-ban. Csak olvasható, ia típus.
+	int ipow_4 m ia 80,1,4,100 g		//emelet konnektorok, teljesítmény W-ban. Csak olvasható, ia típus.
+	int ipow_5 m ia 80,1,5,100 g		//mosogatogep, suto, teljesítmény W-ban. Csak olvasható, ia típus.
+	int ipow_6 m ia 80,1,6,100 g		//mosokonyha, garazs, mellekepulet regi, teljesítmény W-ban. Csak olvasható, ia típus.
+	int ipow_7 m ia 80,1,7,100 g		//muhely, futes, teljesítmény W-ban. Csak olvasható, ia típus.
+	int ipow_8 m ia 80,1,8,100 g		//gyengearam, mcs, teljesítmény W-ban. Csak olvasható, ia típus.
+
+	int icons_1 m ia 80,1,9,600 g		//fogyasztás, Wh, consumption
+	int ocons_1 m rdn 80,1,9 
+	int icons_2 m ia 80,1,10,600 g		//
+	int ocons_2 m rdn 80,1,10 
+	int icons_3 m ia 80,1,11,600 g		//
+	int ocons_3 m rdn 80,1,11 
+	int icons_4 m ia 80,1,12,600 g		//
+	int ocons_4 m rdn 80,1,12 
+	int icons_5 m ia 80,1,13,600 g		//
+	int ocons_5 m rdn 80,1,13 
+	int icons_6 m ia 80,1,14,600 g		//
+	int ocons_6 m rdn 80,1,14 
+	int icons_7 m ia 80,1,15,600 g		//
+	int ocons_7 m rdn 80,1,15 
+	int icons_8 m ia 80,1,16,600 g		//
+	int ocons_8 m rdn 80,1,16 
+
+	int ipo_nappaliaram m ia 80,1,17,600 g		//hálózat tápfeszültség
+
+
+//nappali
+
+	//VIKT		30,47				lepcsonel, nappali nyomogomb mogott	
+	int oli_nappali_lampa m od 30,47,1 g		//altalanos vilagitas
+//	int ili_nappali_lampa m id 30,47,1,100 g	//visszaolvasas
+	int ism_nappali m id 30,47,8,0			// minden port, jelzett
+
+	int isw_nappali_lampa		//nyomogombok korben
+	int orgbled_nappali m od 30,47,18		//RGB LED port, 1=red, 2=green, 4=blue
+	int isw_stnappali_itthon 	//infra 4.gomb - nappali itthon státusz
+	int isw_stnappali_alszik	//infra 5.gomb - nappali alszik státusz
+	int isw_stnappali_tavol		//infra 6.gomb - nappali távol státusz
+
+
+	//KIJMK		60,3				(2) nappali ketrec mellett	
+	flo ite_nappali m it 60,3,1,600 g		//nappali homerseklet
+	int ilm_nappali m ia 60,3,6,600 g		//nappali mert feny
+	str odpk1_nappali m sto 60,3,7			//8 karakter		Kijelzo 1. sora
+	str odpk2_nappali m sto 60,3,8			//8 karater		Kijelzo 2. sora
+	str odpk_nappali m sto 60,3,9			//16 karakter		teljes kijelzo
+
+	int odpkd_nappali m od 60,3,21			//kijelzo idozitett kikapcsolasa, 1-255, 1/8sec
+	int iswk_up_nappali m id 60,3,22,10		//FEL nyomogomb altal novelt valtozo
+	int oswk_up_nappali m od 60,3,22			//visszairas
+	int iswk_down_nappali m id 60,3,23,10		//LE nyomogomb altal novelt valtozo
+	int oswk_down_nappali m od 60,3,23			//visszairas
+	int iswk_enter_nappali m id 60,3,24,10		//ENTER nyomogomb altal novelt valtozo
+	int oswk_enter_nappali m od 60,3,24		//visszairas
+	int iswk_cancel_nappali m id 60,3,25,10		//CANCEL nyomogomb altal novelt valtozo
+	int oswk_cancel_nappali m od 60,3,25		//visszairas
+	int isw_nappali_zoldlampa2 m id 60,3,26,10	//zold vilagitas nyomogomb
+	int osw_nappali_zoldlampa2 m od 60,3,26		//visszairas
+	int iswk_nappali_zoldkonnektor m id 60,3,27,10	//zöld konnektor gomb, a mennyzetrõl lóg szintén
+	int oswk_nappali_zoldkonnektor m od 60,3,27	//visszaírás
+
+	//OD8A		11,7				(8) nappali konyvespolc felso polcan	
+	int oli_nappali_zoldlampa m od 11,7,1 g		//zold vilagitas
+//	int ili_nappali_zoldlampa m id 11,7,1,100 g	//visszaolvasas
+	int oli_nappali_zoldlampa2 m od 11,7,2 g		//zold vilagitas 2
+//	int ili_nappali_zoldlampa2 m id 11,7,2,100 g	//visszaolvasas
+	int oso_nappali_zoldkonnektor=30 m od 11,7,3 g	//zold konnektor
+//	int iso_nappali_zoldkonnektor m id 11,7,3,100 g	//visszaolvasas
+	//	int	od			4		od 0-80		
+	//	int	id			4	10	id 0-80		
+	//	int	od			5		od 0-80		
+	//	int	id			5	10	id 0-80		visszaolvasas
+	int ova_nappali	m od 11,7,6			//nappali futesszelep
+//	int iva_nappali	m id 11,7,6,100 g		//visszaolvasas
+	int oli_nappali_reflektor m od 11,7,7		//reflektor
+//	int ili_nappali_reflektor m id 11,7,7,100 g	//visszaolvasas
+	int ipo_nappali_reflektor m id 11,7,10,100	//220V meglete
+
+	//VIKT		30,22				(5) bejarati ajto nyomogomb mogott	
+	int oli_nappali_eloterlampa m od 30,22,1 g	//eloter lampa
+//	int ili_nappali_eloterlampa m id 30,22,1,100 g	//visszaolvas
+	int ism_nappali_eloterlampa m id 30,22,8,0	//eloter vilagitas nyomogombok
+	int isw_nappali_eloterlampa			//eloter vilagitas nyomogombok
+	//	int	id	30	22	6	10	id 0/1		//nyomogomb (0/1)
+	//	int	id	30	22	7	10	id 0/1		//nyomogomb (0/1)
+//	int ipo_nappali_eloterlampa m id 30,22,9,100 g	//halozati feszultseg meglete (0/1)
+	//	int	od	30	22	10	od 0-6		//infra jel tanitasa (1-6), illetve kilepes (0)
+
+	//VIKT		30,55				(5) konyha asztal vilagitas nyomogomb mogott	
+	int oli_nappali_etkezoasztallampa m od 30,55,1 g		//etkezoasztal vilagitas
+//	int ili_nappali_etkezoasztallampa m id 30,55,1,100 g	//visszaolvasas
+	int ism_nappali_etkezo m id 30,55,8,0		//konyhaasztal vil.nyomogomb
+	int isw_nappali_etkezo		//konyhaasztal vil.nyomogomb
+	int isw_nappali_talalo		//talalo nyomogomb a mostani helyen es a hutonel is
+	int ims_nappali_talalo		//mozgaserzekelo a mostani nyomogombnal
+	int orgbled_nappali_etkezo m od 30,55,18		//RGB LED port, 1=red, 2=green, 4=blue
+	int isw_stkonyha_itthon		//infra 4.gomb - nappali itthon státusz
+	int isw_stkonyha_alszik		//infra 5.gomb - nappali alszik státusz
+	int isw_stkonyha_tavol		//infra 6.gomb - nappali távol státusz
+	
+	//OD8A		11,3				(5) konyhapult felett	
+	int ove_nappali_fozo m od 11,3,1 g		//konyha ventilator
+//	int ive_nappali_fozo m id 11,3,1,100 g		//visszaolvasas
+	int oli_nappali_fozolampa m od 11,3,2 g		//konyhapult vilagitas, suto
+//	int ili_nappali_fozolampa m id 11,3,2,100 g	//visszaolvasas
+	int oli_nappali_konyhapultlampa m od 11,3,3 g		//konyhapult vilagitas, asztal, kek lampak
+//	int ili_nappali_konyhapultlampa	m id 11,3,3,100 g	//visszaolvasas
+	int oli_nappali_talalolampa m od 11,3,4 g	//talaloeszkoz szekreny
+//	int ili_nappali_talalolampa m id 11,3,4,100 g	//visszaolvasas
+	//	int	od			5		od 0-80		WC kislampa
+	//	int	id			5	10	id 0-80		
+	//	int	od			6		od 0-80		WC venti
+	//	int	id			6	10	id 0-80		
+	//	int	od			7		od 0-80		furdo kislampa
+	//	int	id			7	10	id 0-80		
+	int ipo_nappali_konyhapult m id 11,3,10,100	//220V meglete
+
+	//VIKT		30,2					kamra nyomogomb mogott	
+	int oli_nappali_kamralampa m od 30,2,1 g		//visszaolvasas
+//	int ili_nappali_kamralampa m id 0,0,1,100 g	//visszaolvas
+	int ism_nappali_kamralampa m id 30,2,8,0		//kamra vilagitas nyomogomb
+	int isw_nappali_kamralampa			//kamra vilagitas nyomogomb
+	int ico_nappali_kamraajto			//kamra ajto nyitas
+	//	int	id			7	10	id 0/1		//nyomogomb (0/1)
+//	int ipo_nappali_kamralampa m id 30,2,9,100 g	//halozati feszultseg meglete (0/1)
+	//	int	od	10	od 0-6			//infra jel tanitasa (1-6), illetve kilepes (0)
+
+
+	//AU8		?	
+
+
+	//OD8		?	
+	int osw_nappali_hifi 	//nappali hifi ki/be
+	int isw_nappali_hifi 	//nappali hifi ki/be állapot
+
+
+
+
+	////////////  kert ertekek es hatarertekek	
+
+	flo rte_nappali=22.5 g				//kert nappali homerseklet
+
+
+
+//konyvtar
+
+	//VIKT		30,39				(7) konyvtar ajto mellett, nyomogomb mogott	
+	int oli_konyvtar_lampa m od 30,39,1 g		//konyvtar vilagitas
+	//int ili_konyvtar_lampa m id 0,0,39,100 g	//visszaolvas
+	int ism_konyvtar_lampa m id 30,39,8,0		//konyvtar vilagitas nyomogomb
+	int isw_konyvtar_lampa		//konyvtar vilagitas nyomogomb
+	int orgbled_konyvtar m od 30,39,18			//RGB LED port, 1=red, 2=green, 4=blue
+	int isw_stkonyvtar_itthon		//infra 4.gomb - könyvtár itthon státusz
+	int isw_stkonyvtar_alszik		//infra 5.gomb - könyvtár alszik státusz
+	int isw_stkonyvtar_tavol		//infra 6.gomb - könyvtár távol státusz
+
+	//KIJMK		60,2				konyvtar ajto mellett	
+	flo ite_konyvtar g					//konyvtar mert homerseklet
+	int ilm_konyvtar 					//konyvtar mert fenyero
+
+//	flo ite_konyvtar m it 60,2,1,10 g		//konyvtar mert homerseklet
+//	int ilm_konyvtar m ia 60,2,6,10 g		//konyvtar mert fenyero
+//	str odpk1_konyvtar m sto 60,2,7 g 		//Kijelzo 1. sora
+//	str odpk2_konyvtar m sto 60,2,8 g		//Kijelzo 2. sora
+//	str odpk_konyvtar m sto 60,2,9 g			//teljes kijelzo
+	//	int	od	0	0	10		od 0/1		kimenet
+	//	int	id	0	0	10		id 0/1		visszaolvasas
+	//	int	od	0	0	11		od 0/1		kimenet
+	//	int	id	0	0	11		id 0/1		visszaolvasas
+	//	int(2)		0	0	20		2 elemes tomb		infra tanitas inditasa
+//	int odpkd_konyvtar m od 60,2,21 g		//kijelzo idozitett kikapcsolasa, 1-255, 1/8sec
+//	int iswk_up_konyvtar m id 60,2,22,10 g		//FEL nyomogomb altal novelt valtozo
+//	int oswk_up_konyvtar m od 60,2,22 g		//visszairas
+//	int iswk_down_konyvtar m id 60,2,23,10 g	//LE nyomogomb altal novelt valtozo
+//	int oswk_down_konyvtar m od 60,2,23 g		//visszairas
+//	int iswk_enter_konyvtar m id 60,2,24,10 g	//ENTER nyomogomb altal novelt valtozo
+//	int oswk_enter_konyvtar m od 60,2,24 g		//visszairas
+//	int iswk_cancel_konyvtar m id 60,2,25,10 g	//CANCEL nyomogomb altal novelt valtozo
+//	int oswk_cancel_konyvtar m od 60,2,25 g		//visszairas
+	//	int	id	0	0	26	10			1. bemenethez tartozo novelt valtozo
+	//	int	od	0	0	26				visszairas
+	//	int	id	0	0	27	10			2. bemenethez tartozo novelt valtozo
+	//	int	od	0	0	27				visszairas
+
+
+	//KIJMK		60,9				konyvtar TV mellett	
+//	flo ite_konyvtar_tv m it 60,9,1,10 g		//konyvtar tv mert homerseklet
+//	int ilm_konyvtar_tv m ia 60,9,6,10 g		//konyvtar tv mert fenyero
+//	str odpk1_konyvtar_tv m sto 60,9,7 g 		//Kijelzo 1. sora
+//	str odpk2_konyvtar_tv m sto 60,9,8 g		//Kijelzo 2. sora
+//	str odpk_konyvtar_tv m sto 60,9,9 g			//teljes kijelzo
+	//	int	od	0	0	10		od 0/1		kimenet
+	//	int	id	0	0	10		id 0/1		visszaolvasas
+	//	int	od	0	0	11		od 0/1		kimenet
+	//	int	id	0	0	11		id 0/1		visszaolvasas
+	//	int(2)		0	0	20		2 elemes tomb		infra tanitas inditasa
+//	int odpkd_konyvtar_tv m od 60,9,21 g		//kijelzo idozitett kikapcsolasa, 1-255, 1/8sec
+//	int iswk_up_konyvtar_tv m id 60,9,22,10 g	//FEL nyomogomb altal novelt valtozo
+//	int oswk_up_konyvtar_tv m od 60,9,22 g		//visszairas
+//	int iswk_down_konyvtar_tv m id 60,9,23,10 g	//LE nyomogomb altal novelt valtozo
+//	int oswk_down_konyvtar_tv m od 60,9,23 g	//visszairas
+//	int iswk_enter_konyvtar_tv m id 60,9,24,10 g	//ENTER nyomogomb altal novelt valtozo
+//	int oswk_enter_konyvtar_tv m od 60,9,24 g	//visszairas
+//	int iswk_cancel_konyvtar_tv m id 60,9,25,10 g	//CANCEL nyomogomb altal novelt valtozo
+//	int oswk_cancel_konyvtar_tv m od 60,9,25 g	//visszairas
+//	int iswk_1input_konyvtar_tv m id 60,9,26,10 g	//1. bemenethez tartozó növelt változó
+//	int oswk_1input_konyvtar_tv m od 60,9,26 g	//visszaírás
+//	int iswk_2input_konyvtar_tv m id 60,9,27,10 g	//2. bemenethez tartozó növelt változó
+//	int oswk_2input_konyvtar_tv m od 60,9,27 g	//visszaírás
+//	int iinfk1_konyvtar_tv m id 60,9,28,10 g	//1. Infrajel
+//	int oinfk1_konyvtar_tv m od 60,9,28 g		//visszaírás
+//	int iinfk2_konyvtar_tv m id 60,9,29,10 g	//2. Infrajel
+//	int oinfk2_konyvtar_tv m od 60,9,29 g		//visszaírás
+//	int iinfk3_konyvtar_tv m id 60,9,30,10 g	//3. Infrajel
+//	int oinfk3_konyvtar_tv m od 60,9,30 g		//visszaírás
+//	int iinfk4_konyvtar_tv m id 60,9,31,10 g	//4. Infrajel
+//	int oinfk4_konyvtar_tv m od 60,9,31 g		//visszaírás
+//	int iinfk5_konyvtar_tv m id 60,9,32,10 g	//5. Infrajel
+//	int oinfk5_konyvtar_tv m od 60,9,32 g		//visszaírás
+//	int iinfk6_konyvtar_tv m id 60,9,33,10 g	//6. Infrajel
+//	int oinfk6_konyvtar_tv m od 60,9,33 g		//visszaírás
+//	int iinfk7_konyvtar_tv m id 60,9,34,10 g	//7. Infrajel
+//	int oinfk7_konyvtar_tv m od 60,9,34 g		//visszaírás
+//	int iinfk8_konyvtar_tv m id 60,9,35,10 g	//8. Infrajel
+//	int oinfk8_konyvtar_tv m od 60,9,35 g		//visszaírás
+
+	//OD8A		11,5				(4) konyvtar kp.szekreny	
+	int oli_konyvtar_juditlampa m od 11,5,1 g	//judit iroasztal vilagitas
+//	int ili_konyvtar_juditlampa m id 11,5,1,100 g	//visszaolvas
+	int oli_konyvtar_reflektor=50 m od 11,5,2 g	//konyvtar reflektor
+//	int ili_konyvtar_reflektor m id 11,5,2,100	//visszaolvas
+	int oli_konyvtar_tamaslampa m od 11,5,3 g	//konyvtar tamas iroasztal vilagitas
+//	int ili_konyvtar_tamaslampa m id 11,5,3,100 g	//visszaolvas
+	int oli_konyvtar_saroklampa1=40 m od 11,5,4 g	//konyvtar sarok
+//	int ili_konyvtar_saroklampa1 m id 11,5,4,100 g	//visszaolvas
+	int oli_konyvtar_saroklampa2=40 m od 11,5,5 g	//konyvtar sarok
+//	int ili_konyvtar_saroklampa2 m id 11,5,5,100 g	//visszaolvas
+	int oli_konyvtar_saroklampa3=40 m od 11,5,6 g	//konyvtar sarok
+//	int ili_konyvtar_saroklampa3 m id 11,5,6,100 g	//visszaolvas
+	int oli_konyvtar_saroklampa4=40 m od 11,5,7 g	//konyvtar sarok
+//	int ili_konyvtar_saroklampa4 m id 11,5,7,100 g	//visszaolvas
+	int ipo_konyvtar_od1 m id 11,5,10,100 g		//220V meglete
+
+	//OD8A		11,2				(4) konyvtar kp.szekreny	
+	int oli_konyvtar_olvasolampa1 m od 11,2,1 g	//kt olvasovil.1
+//	int ili_konyvtar_olvasolampa1 m id 11,2,1,100 g	//visszaolvas
+	int oli_konyvtar_olvasolampa2 m od 11,2,2 g	//kt olvasovil.2
+//	int ili_konyvtar_olvasolampa2 m id 11,2,2,100 g	//visszaolvas
+	int oli_konyvtar_olvasolampa3 m od 11,2,3 g	//kt olvasovil.3
+//	int ili_konyvtar_olvasolampa3 m id 11,2,3,100 g	//visszaolvas
+	int oli_konyvtar_asztallampa m od 11,2,4 g	//kt asztal az ablak mellett, vilagitas
+//	int ili_konyvtart_asztallampa m id 11,2,4,100 g	//visszaolvas
+	int oli_konyvtar_ablakreflektor m od 11,2,5 g		//kt ablak reflektor
+//	int ili_konyvtart_ablakreflektor m id 11,2,5,100	g	//visszaolvas
+	//	int	od	11	2	6		od 0-80		
+	//	int	id	11	2	6	10	id 0-80		
+	int ova_konyvtar m od 11,2,7 g			//kt futesszelep
+//	int iva_konyvtar m id 11,2,7,100 g		//visszaolvasas
+	int ipo_konyvtar_od2 m id 11,2,10,100 g		//220V meglete
+										
+	//ID8		71,3				konyvtar kp.szekreny	
+//	int isw_konyvtar_tamaslampa m id 71,3,1,10	//tamas asztal zsinoros nyomogomb
+//	int isw_konyvtar_juditlampa m id 71,3,2,10	//judit asztal zsinoros nyomogomb
+	//	int	id	71	3	1	10	id 0/1	1. port bemenet	eloter - belepteto gombjai
+	//	int	id	71	3	2	10	id 0/1	2. port bemenet	eloter - belepteto gombjai
+	//	int	id	71	3	3	10	id 0/1	3. port bemenet	eloter - belepteto gombjai
+	//	int	id	71	3	4	10	id 0/1	4. port bemenet	eloter - belepteto gombjai
+	//	int	id	71	3	5	10	id 0/1	5. port bemenet	
+	//	int	id	71	3	6	10	id 0/1	6. port bemenet	
+	//	int	id	71	3	7	10	id 0/1	7. port bemenet	
+	//	int	id	71	3	8	10	id 0/1	8. port bemenet	
+
+
+
+//halo
+
+	//KIJMK		0,0				halo	
+	flo ite_halo g  			//IDEIGLENES!!! halo homerseklet
+	int ilm_halo 			//halo mert feny
+//	flo ite_halo m it 0,0,1,100 g 			//halo homerseklet
+//	int ilm_halo m ia 0,0,6,10 g			//halo mert feny
+//	str odpk1_halo m sto 0,0,7 g			//Kijelzo 1. sora
+//	str odpk2_halo m sto 0,0,8 g			//Kijelzo 2. sora
+//	str odpk_halo m sto 0,0,9 g			//teljes kijelzo
+	//	int	od			10		od 0/1		kimenet
+	//	int	id			10		id 0/1		visszaolvasas
+	//	int	od			11		od 0/1		kimenet
+	//	int	id			11		id 0/1		visszaolvasas
+	//	int(2)				20		2 elemes tomb		infra tanitas inditasa
+//	int odpkd_halo m od 0,0,21 g 			//kijelzo idozitett kikapcsolasa, 1-255, 1/8sec
+//	int iswk_up_halo m id 0,0,22,10	g		//FEL nyomogomb altal novelt valtozo
+//	int oswk_up_halo m od 0,0,22 g 			//visszairas
+//	int iswk_down_halo m id 0,0,23,10 g		//LE nyomogomb altal novelt valtozo
+//	int oswk_down_halo m od	0,0,23 g		//visszairas
+//	int iswk_enter_halo m id 0,0,24,10 g		//ENTER nyomogomb altal novelt valtozo
+//	int oswk_enter_halo m od 0,0,24 g		//visszairas
+//	int iswk_cancel_halo m id 0,0,25,10 g		//CANCEL nyomogomb altal novelt valtozo
+//	int oswk_cancel_halo m od 0,0,25 g		//visszairas
+//	int isw_halo_juditlampa m id 0,0,26,10 g	//1. bemenethez tartozo novelt valtozo
+	int isw_halo_juditlampa 	//1. bemenethez tartozo novelt valtozo     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//	int osw_halo_juditlampa m od 0,0,26 g		//visszairas
+//	int isw_halo_tamaslampa m id 0,0,27,10 g	//2. bemenethez tartozo novelt valtozo
+	int isw_halo_tamaslampa 	//2. bemenethez tartozo novelt valtozo        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//	int osw_halo_tamaslampa m od 0,0,27 g		//visszairas
+
+	//VIKT		30,14				(5) halo ajto mellett, nyomogomb mogott	
+	int oli_halo_lampa m od	30,14,1 g		//halo vilagitas
+//	int ili_halo_lampa m id	30,14,1,100 g		//visszaolvasas
+	int ism_halo_lampa m id	30,14,8,0		//halo vilagitas nyomogomb
+	int isw_halo_lampa		//halo vilagitas nyomogomb
+	//int isw_halo_alvas m id 30,14,6,10		//háló alvás/ébred státuszváltó
+	//	int	id	30	26	6	10	id 0/1		//nyomogomb (0/1)
+	//	int	id	30	26	7	10	id 0/1		//nyomogomb (0/1)
+//	int ipo_halo_lampa m id	30,14,9,100 g		//halozati feszultseg meglete (0/1)
+
+	//VIKI		30,101				(5) hálóban, ajtó mellett, sárga csillag	
+//	int odl1_haloalvasgomb_kek m od 30,101,1	//1. LED kimenet - kék LED
+	//int idl1_haloalvasgomb_kek m id 30,101,1	//visszaolvasás
+//	int isw_halo_alvas	//háló alvásgomb
+//	int isw_halo_alvas m id 30,101,5,10		//háló alvásgomb
+	//isw_	int	id	30	101	6		id 0/1		fényerõnövelõ változásjelzõ bit
+	//isw_	int	id	30	101	7		id 0/1		fényerõcsökkentõ változásjelzõ bit
+//	int ilm_haloalvasgomb m id 30,101,8,10		//mért fényerõ értéke
+//	int odl2_haloalvasgomb_piros m od 30,101,9	//2. LED kimenet - piros LED
+	//int idl2_haloalvasgomb_piros m id 30,101,9	//visszaolvasás
+	//	int	od	30	101	10		od 0-6		//infra jel tanitasa (1-6), illetve kilepes (0)
+
+
+	//OD8A		11,8				halo	
+//	int oli_halo_juditlampa m od 11,8,1 g		//judit olvasolampa
+	int oli_halo_juditlampa 		//IDEIGLENES!!!!!judit olvasolampa
+//	int ili_halo_juditlampa m id 11,8,1,100 g	//visszaolvasas
+//	int oli_halo_tamaslampa m od 11,8,2 g		//tamas olvasolampa
+	int oli_halo_tamaslampa 		//IDEIGLENES!!!!tamas olvasolampa
+//	int ili_halo_tamaslampa m id 11,8,2,100 g	//visszaolvasas
+//	int ova_halo m od 11,8,3 g 			//halo futesszelep
+//	int iva_halo m id 11,8,3,100 g			//visszaolvasas
+//	int ova_halo_furdo m od 11,8,4 g		//furdo futesszelep
+//	int iva_halo_furdo m id 11,8,4,100 g		//visszaolvasas
+	//	int	od			5		od 0-80		
+	//	int	id			5	10	id 0-80		
+	//	int	od			6		od 0-80		
+	//	int	id			6	10	id 0-80		
+	//	int	od			7		od 0-80		
+	//	int	id			7	10	id 0-80		
+//	int ipo_halo_konnektor m id 11,8,10,100 g	//220V meglete
+
+	//VIKT2		30, 44				(5) elõtér, nappali ajtó melletti nyomógomb mögött	
+	int oli_halo_eloterlampa m od 30,44,1 g		//elõtér világítás
+	//int ili_halo_eloterlampa m id 30,44,1		//visszaolvasas
+	int ism_halo_eloterlampa m id 30,44,8,0		//elõtér vil. nyomógomb
+	int isw_halo_eloterlampa		//elõtér vil. nyomógomb
+	int orgbled_halo_eloterlampa m od 30,44,18	//RGB LED port, 1=red, 2=green, 4=blue
+	int isw_sthalo_itthon		//infra 4.gomb - háló itthon státusz
+	int isw_sthalo_alszik		//infra 5.gomb - háló alszik státusz
+	int isw_sthalo_tavol		//infra 6.gomb - háló távol státusz
+
+
+	//VIKT		30,3				(5) WC nyomogomb mogott	
+	int oli_halo_wckislampa m od 30,3,1 g		//WC vilagitas
+//	int ili_halo_wckislampa m id 30,3,1,100 g	//visszaolvasas
+	int ism_halo_wclampa m id 30,3,8,0		//WC vil. nyomogomb
+	int isw_halo_wclampa		//WC vil. nyomogomb
+	//	int	id	30	3	6	10	id 0/1		//nyomogomb (0/1)
+	//	int	id	30	3	7	10	id 0/1		//nyomogomb (0/1)
+//	int ipo_halo_wclampa m id 30,3,9,100 g		//halozati feszultseg meglete (0/1)
+	//	int	od	30	3	10	od 0-6		//infra jel tanitasa (1-6), illetve kilepes (0)
+
+	//KIJMK		60,5			furdo	
+	flo ite_halo_furdo m it 60,5,1,100 g		//furdo mert homerseklet
+//	int ilm_halo_furdo m ia 60,5,6,10 g		//furdo mert feny
+	str odpk1_halo_furdo m sto 60,5,7		//Kijelzo 1. sora
+	str odpk2_halo_furdo m sto 60,5,8		//Kijelzo 2. sora
+	str odpk_halo_furdo m sto 60,5,9		//teljes kijelzo
+	//	int	od			10		od 0/1		kimenet
+	//	int	id			10		id 0/1		visszaolvasas
+	//	int	od			11		od 0/1		kimenet
+	//	int	id			11		id 0/1		visszaolvasas
+	//	int(2)				20		2 elemes tomb		infra tanitas inditasa
+//	int odpkd_halo_furdo m od 60,5,21		//kijelzo idozitett kikapcsolasa, 1-255, 1/8sec
+//	int iswk_up_halo_furdo m id 60,5,22,10		//FEL nyomogomb altal novelt valtozo
+//	int oswk_up_halo_furdo m od 60,5,22  		//visszairas
+//	int iswk_down_halo_furdo m id 60,5,23,10  	//LE nyomogomb altal novelt valtozo
+//	int oswk_down_halo_furdo m od 60,5,23 		//visszairas
+//	int iswk_enter_halo_furdo m id 60,5,24,10 	//ENTER nyomogomb altal novelt valtozo
+//	int oswk_enter_halo_furdo m od 60,5,24 		//visszairas
+//	int iswk_cancel_halo_furdo m id 60,5,25,10 	//CANCEL nyomogomb altal novelt valtozo
+//	int oswk_cancel_halo_furdo m od 60,5,25 	//visszairas
+	//	int	id			26	10			1. bemenethez tartozo novelt valtozo
+	//	int	od			26				visszairas
+	//	int	id			27	10			2. bemenethez tartozo novelt valtozo
+	//	int	od			27				visszairas
+
+	//VIKT		30,34				(5) furdo, kulso nyomogomb mogott	
+	int oli_halo_furdolampa m od 30,34,1 g		//furdo vilagitas
+//	int ili_halo_furdolampa	m id 30,34,1,100 g	//visszaolvasas
+	int ism_halo_furdolampa	m id 30,34,8,0		//furdo vilagitas nyomogomb
+	int isw_halo_furdolampa			//furdo vilagitas nyomogomb
+	//	int	id	30	34	6	10	id 0/1		//nyomogomb (0/1)
+	//	int	id	30	34	7	10	id 0/1		//nyomogomb (0/1)
+//	int ipo_halo_furdolampa m id 30,34,9,100 g	//halozati feszultseg meglete (0/1)
+	//	int	od	30	34	10	od 0-6		//infra jel tanitasa (1-6), illetve kilepes (0)
+
+	//OD8A		11,3				(5) konyhapult teteje	
+	int oli_halo_wclampa m od 11,3,5 g		//WC kislampa, hatterfeny
+//	int ili_halo_wclampa m id 11,3,5,100 g		//visszaolvasas
+	int ove_halo_wc	m od 11,3,6 g			//WC ventilator
+//	int ive_halo_wc	m id 11,3,6,100 g		//visszaolvasas
+	int oli_halo_furdokislampa m od 11,3,7 g	//furdo kislampa, hatterfeny
+//	int ili_halo_furdokislampa m id 11,3,7,100 g	//visszaolvasas
+	//	int	id			10	10	id 0/1		220V meglete
+
+
+
+
+
+//jatszo
+
+	//VIKT		30,12				jatszo vilagitas, furdo ajto melletti kapcsolo mogott	
+	int oli_jatszo_lampa m od 30,12,1 g		//jatszo vilagitas
+	int ism_jatszo_lampa m id 30,12,8,0		//jatszo vilagitas nyomogomb
+	int isw_jatszo_lampa		//jatszo vilagitas nyomogomb
+	//	int	id	30,12,6,10	id 0/1		//nyomogomb (0/1)
+	//	int	id	30,12,7,10	id 0/1		//nyomogomb (0/1)
+//	int ipo_jatszo_lampa m id 30,12,9,100 g		//halozati feszultseg meglete (0/1)
+	//	int	od	30,12,10		od 0-6		//infra jel tanitasa (1-6), illetve kilepes (0)
+
+	//VIKT		30,51				lepcso vilagitas, also nyomogomb mogott	
+	int oli_jatszo_lepcsolampa m od	30,51,1 g	//lepcso vilagitas
+//	int ili_jatszo_lepcsolampa m id 30,51,1,100 g	//visszaolvas
+	int ism_jatszo_lepcsolampa m id 30,51,8,0	//lepcso vilagitas nyomogomb
+	int isw_jatszo_lepcsolampa			//lepcso vilagitas nyomogomb
+	int orgbled_jatszo_lepcso m od 30,51,18		//RGB LED port, 1=red, 2=green, 4=blue
+
+	//KIJMK		60,4				játszó alvásgomb, kék hold	
+	flo ite_jatszo_alvasgomb m it 60,4,1,100	//hõmérõ bemenet, mint IT8 1 portja. A programban it típus.
+	int ilm_jatszo_alvasgomb m ia 60,4,6,10		//analóg (fényérzékelõ) bemenet
+	int osw_jatszoalvasgomb_blue m od 60,4,10	//1. kimenet
+	//	int	id	60	5	10		id 0/1		visszaolvasás
+	int osw_jatszoalvasgomb_red m od 60,4,11	//2.kimenet
+	//	int	id	60	5	11		id 0/1		visszaolvasás
+
+	int iswkup_jatszo_alvasgomb m id 60,4,22,10	//FEL nyomógomb által növelt változó
+	int oswkup_jatszo_alvasgomb m od 60,4,22	//visszaírás
+	int iswkdown_jatszo_alvasgomb m id 60,4,23,10	//LE nyomógomb által növelt változó
+	int oswkdown_jatszo_alvasgomb m od 60,4,23	//visszaírás
+	int iswkenter_jatszo_alvasgomb m id 60,4,24,10	//ENTER nyomógomb által növelt változó
+	int oswkenter_jatszo_alvasgomb m od 60,4,24	//visszaírás
+	int iswkcancel_jatszoalvasgomb m id 60,4,25,10	//CANCEL nyomógomb által növelt változó
+	int oswkcancel_jatszoalvasgomb m od 60,4,25	//visszaírás
+	int iswk1_jatszo_alvasgomb m id 60,4,26,10	//1. bemenethez tartozó növelt változó
+	int oswk1_jatszo_alvasgomb m od 60,4,26		//visszaírás
+	int iswk2_jatszo_alvasgomb m id 60,4,27,10	//2. bemenethez tartozó növelt változó
+	int oswk2_jatszo_alvasgomb m od 60,4,27		//visszaírás
+
+
+	//TIV						jatszo TV mellett	
+	flo ite_jatszo			//IDEIGL    jatszo homerseklet
+//	flo ite_jatszo m it 0,0,1,100 g			//jatszo homerseklet
+//	int isw_jatszo_hifi m id 0,0,2,10 g		//pc ki/be allapota
+//	int isw_jatszo_pc m id 0,0,3,10 g		//hifi ki/be allapota
+	int osw_jatszo_hifi 				//IDEIGGGGGGpc ki/be allapota
+//	int osw_jatszo_hifi m od 0,0,4 g		//pc ki/be
+	int osw_jatszo_pc 			//IDEIGGGGGGhifi ki/be
+//	int osw_jatszo_pc m od 0,0,5 g			//hifi ki/be
+	int ilm_jatszo 			//IDEIGL   jatszo mert feny
+//	int ilm_jatszo m ia 0,0,6,10 g			//jatszo mert feny
+//	int odpti_jatszo m rdn 0,0,38 g			//kijelzo egesz (-99 - +999)
+//	flo odptf_jatszo m rdnd 0,0,39 g		//kijelzo 1tizedessel (-9.9 - +99.9)
+//	int odptd_jatszo m od 0,0,44 g			//kijelzo idozitett kikapcsolasa, 1-255, 1/8sec
+
+	//OD8A				11,4		//marci szobája, ajtó mellett
+	int oli_jatszo_reflektor m od 11,4,1 g		//játszó reflektorok a gerendán
+//	int ili_jatszo_reflektor m id 11,4,7,100 g	//visszaolvasás
+
+
+	//OD8A									
+	int oli_jatszo_asztallampa 		//IDEIGLENES  jatszo asztal vilagitas
+//	int oli_jatszo_asztallampa m od 0,0,1 g		//jatszo asztal vilagitas
+//	int ili_jatszo_asztallampa m id 0,0,1,100 g	//visszaolvasas
+	int oli_jatszo_olvasolampa 		//IDEIGLLLLLjatszo olvaso vilagitas
+//	int oli_jatszo_olvasolampa m od 0,0,2 g		//jatszo olvaso vilagitas
+//	int ili_jatszo_olvasolampa m id 0,0,2,100 g	//visszaolvasas
+	//	int	od			3		od 0-80		
+	//	int	id			3	10	id 0-80		
+	//	int	od			4		od 0-80		
+	//	int	id			4	10	id 0-80		
+	//	int	od			5		od 0-80		
+	//	int	id			5	10	id 0-80		
+	//	int	od			6		od 0-80		
+	//	int	id			6	10	id 0-80		
+//	int ova_jatszo m od 0,0,7 g			//futes szelep
+//	int iva_jatszo m id 0,0,7,100 g			//visszaolvasas
+//	int ipo_jatszo_oda m id 0,0,10,100 g		//220V meglete
+										
+	//ID8									
+	int isw_jatszo_asztallampa			//jatszo asztal vilagitas nyomogomb
+	int isw_jatszo_olvasolampa			//jatszo olvaso vilagitas nyomogomb
+
+
+
+//juli
+
+	//VIKT		30,33				(6) juli szobaja
+	int oli_juli_lamp m od 30,33,1 g		//juli mennyezeti lampa
+//	int ili_juli_lamp m id 30,33,1,100 g		//visszaolvasas
+	int ism_juli_lamp m id 30,33,8,0		//juli nyomogomb ajto mellett (0/1)
+	int isw_juli_lamp		//juli nyomogomb ajto mellett (0/1)
+	int isw_juli_sleep		//juli alvasgomb az agyanal (0/1)
+	int isw_juli_learn		//juli tanulas gomb az asztalanal (0/1)
+//	int ipo_juli_lamp m id 30,33,9,100 g		//halozati feszultseg meglete (0/1)
+
+	//TIV		50,3				(6) juli szobaja
+	flo ite_juli m it 50,3,1,600 g			//szoba homero
+	int isw_juli_pc m id 50,3,2,100			//pc ki/be allapota				
+	int isw_juli_hifi m id 50,3,3,100		//hifi ki/be allapota
+	int osw_juli_pc m od 50,3,4 			//pc ki/be
+	int osw_juli_hifi m od 50,3,5			//hifi ki/be
+	int ilm_juli m ia 50,3,6,600 g			//szoba fenyertek
+	int odpti_juli m rdn 50,3,38			//kijelzo egesz (-99 - +999)
+	flo odptf_juli m rdnd 50,3,39			//kijelzo 1tizedessel (-9.9 - +99.9)
+	int odptd_juli m od 50,3,44			//kijelzo idozitett kikapcsolasa, 1-255, 1/8sec
+
+	//OD8A		11,4				juli szobaja
+	int oli_juli_desktop		//IDEIGLENES!!!!!!!!!!juli asztali lampa
+//	int oli_juli_desktop m od 11,4,1		//juli asztali lampa
+//	int ili_juli_desktop m id 11,4,1,100 g		//visszaolvasas
+//	int oli_juli_bed m od 11,4,2 g			//juli olvasolampa az agyanal
+	int oli_juli_bed 			//IDEIGLENES!!!!!juli olvasolampa az agyanal
+//	int ili_juli_bed m id 11,4,2,100 g		//visszaolvasas
+//	int ova_juli m od 11,4,3 g			//juli futoszelep
+//	int iva_juli m id 11,4,3,100 g			//visszaolvasas
+
+
+//marci
+
+	//VIKT		30,56				(6) marci szobaja
+	int oli_marci_lampa m od 30,56,1 g		//marci mennyezeti lampa
+//	int ili_marci_lampa m id 30,56,1,100		//visszaolvasas
+	int ism_marci_lampa m id 30,56,8,0		//marci vilagitas nyomogomb
+	int isw_marci_lampa		//marci vilagitas nyomogomb
+	int isw_marci_alvas		//marci alvasgomb az agyanal (0/1)
+	int isw_marci_ebreszto		//marci ebresztes gomb az agyanal (0/1)
+	int orgbled_marci m od 30,56,18			//RGB LED port, 1=red, 2=green, 4=blue
+	int isw_stmarci_itthon		//infra 4.gomb - marci itthon státusz
+	int isw_stmarci_alszik		//infra 5.gomb - marci alszik státusz
+	int isw_stmarci_tavol		//infra 6.gomb - marci távol státusz
+
+	//KIJMK		60,25				(6) marci szobaja	
+	flo ite_marci m it 60,25,1,600 g		//szoba homerseklet
+	int ilm_marci m ia 60,25,6,600 g		//mert feny
+	str odpk1_marci m sto 60,25,7 			//8 karakter		Kijelzo 1. sora
+	str odpk2_marci m sto 60,25,8 			//8 karater		Kijelzo 2. sora
+
+	int iswk_up_marci m id 60,25,22,10		//FEL nyomogomb altal novelt valtozo
+	int oswk_up_marci m od 60,25,22			//visszairas
+	int iswk_down_marci m id 60,25,23,10		//LE nyomogomb altal novelt valtozo
+	int oswk_down_marci m od 60,25,23		//visszairas
+	int iswk_enter_marci m id 60,25,24,10		//ENTER nyomogomb altal novelt valtozo
+	int oswk_enter_marci m od 60,25,24		//visszairas
+	int iswk_cancel_marci m id 60,25,25,10		//CANCEL nyomogomb altal novelt valtozo
+	int oswk_cancel_marci m od 60,25,25		//visszairas
+//	int isw_marci_zoldlampa2 m id 60,25,26,10	//zold vilagitas nyomogomb
+//	int osw_marci_zoldlampa2 m od 60,25,26		//visszairas
+//	int iswk_marci_zoldkonnektor m id 60,25,27,10	//zöld konnektor gomb, a mennyzetrõl lóg szintén
+//	int oswk_marci_zoldkonnektor m od 60,25,27	//visszaírás
+
+
+
+	//volt  TIV		50,5				(6) marci szobaja
+	int isw_marci_pc				//pc ki/be allapota
+	int isw_marci_hifi				//hifi ki/be allapota
+	int osw_marci_pc				//pc ki/be
+	int osw_marci_hifi				//hifi ki/be
+
+	//VIKT		30,43				(6) marci, ágy mellett
+	int oli_marci_olvasolampa m od 30,43,1 g		//marci mennyezeti lampa
+//	int ili_marci_lampa m id 30,43,1,100		//visszaolvasas
+	int ism_marci_olvaso m id 30,43,8,0		//marci vilagitas nyomogomb
+	int isw_marci_olvaso			//marci vilagitas nyomogomb
+	int isw_marci_tanulo			//marci alvasgomb az agyanal (0/1)
+	int orgbled_marci_olvaso m od 30,43,18		//RGB LED port, 1=red, 2=green, 4=blue
+//	int isw_stmarci_itthon m id 30,43,19,10		//infra 4.gomb - marci itthon státusz
+//	int isw_stmarci_alszik m id 30,43,20,10		//infra 5.gomb - marci alszik státusz
+//	int isw_stmarci_tavol m id 30,43,21,10		//infra 6.gomb - marci távol státusz
+
+	//OD8A		11,4				marci szobája, ajtó mellett
+//lásd ott	int oli_jatszo_reflektor m od 11,4,1 g	//játszó reflektorok a gerendán
+//	int ili_jatszo_reflektor m id 11,4,1,100 g	//visszaolvasás
+	int oli_marci_dolgozolampa m od 11,4,2 g	//marci dolgozoasztal lampa
+//	int ili_marci_dolgozolampa m id 11,4,2,100 g	//visszaolvasas
+	int oli_marci_tanulolampa m od 11,4,3 g		//marci tanulo lampa
+//	int ili_marci_tanulolampa m id 11,4,3,100 g	//visszaolvasas
+//	int oli_marci_ m od 11,4,4 g			//marci
+//	int ili_marci_ m id 11,4,4,100 g		//visszaolvasas
+//	int oli_marci_tanulolampa m od 11,4,5 g		//marci tanulo lampa
+//	int ili_marci_tanulolampa m id 11,4,5,100 g	//visszaolvasas
+//	int oli_marci_dolgozolampa m od 11,4,6 g	//marci dolgozoasztal lampa
+//	int ili_marci_dolgozolampa m id 11,4,6,100 g	//visszaolvasas
+//	int ova_marci m od 11,4,7 g			//marci futesszelep
+//	int iva_marci m id 11,4,7,100 g		//visszaolvasas
+//	int ipo_marci_oda m id 11,4,10,100 g		//220V meglete
+
+
+
+//borianni
+
+	//VIKT 		30,32				(6) bori es anni szobaja
+	int oli_borianni_lampa m od 30,32,1 g		//borianni szoba vilagitas
+//	int ili_borianni_lampa m id 30,32,1,100 g	//visszaolvasas
+	int ism_borianni_lampa m id 30,32,8,0		//borianni szoba vilagitas nyomogomb
+	int isw_borianni_lampa		//borianni szoba vilagitas nyomogomb
+	int isw_bori_tanulo		//bori egérgomb a nyomógomb alatt
+	int isw_bori_tanulo2		//bori egérgomb a nyomógomb alatt
+//	int ipo_borianni_lampa m id 30,32,9,100 g	//halozati feszultseg meglete (0/1)
+	//	int	od	30	32	10	od 0-6		//infra jel tanitasa (1-6), illetve kilepes (0)
+
+	//TIV		50,4				(6) bori es anni szobaja	
+	flo ite_borianni m it 50,4,1,600 g		//borianni szoba homerseklet
+//	int isw_bori_pc m id 50,4,2,10 g		//pc ki/be allapota
+//	int isw_bori_hifi m id 50,4,3,10 g		//hifi ki/be allapota
+	int osw_boriannilampa_kek m od 50,4,4 		//borianni lampa kék jelzõfény
+	int osw_boriannilampa_piros m od 50,4,5		//borianni lampa piros jelzõfény
+	int ilm_borianni m ia 50,4,6,600 g		//borianni mert feny
+	int odpti_borianni m rdn 50,4,38 		//kijelzo egesz (-99 - +999)
+	flo odptf_borianni m rdnd 50,4,39 		//kijelzo 1tizedessel (-9.9 - +99.9)
+	int odptd_borianni m od 50,4,44 		//kijelzo idozitett kikapcsolasa, 1-255, 1/8sec
+
+	//VIKI		30,103				(2) anni szivecske gomb	
+	int odl1_annialvasgomb_sarga m od 30,103,1	//Sárga fény - 1. LED kimenet
+	//int idl1_annialvasgomb_sarga m id 30,103,1,10 g	//visszaolvasás
+	int isw_anni_alvasgomb m id 30,103,5,10		//anni szív gomb
+	//isw_	int	id	30	103	6		id 0/1		
+	//isw_	int	id	30	103	7		id 0/1		
+	int ilm_annialvasgomb m id 30,103,8,1000 	//mért fényerõ értéke
+	int odl2_annialvasgomb_piros m od 30,103,9 	//Piros fény - 2. LED kimenet
+	//int idl2_annialvasgomb_piros	int	id	30	103	9		id 0/1		visszaolvasás
+	//int	od	30	103	10		od 0-6		//infra jel tanitasa (1-6), illetve kilepes (0)
+
+	//VIKI		30,102				(2) alvás hold gomb + lábnyom gomb	
+	int odl1_boriannialvasgomb_kek m od 30,102,1 	//Kék fény - 1. LED imenet
+	//int idl1_boriannialvasgomb_kek m id 30,102,1,10 g		//visszaolvasás
+	int isw_borianni_alvas m id 30,102,5,10		//hold nyomógomb
+	int isw_bori_alvasgomb m id 30,102,6,10		//piros lábnyom gomb
+	//isw_	int	id	30	102	7		id 0/1		
+	//ilm_	int	id	30	102	8		id 0-19		mért fényerõ értéke
+	int odl2_borialvasgomb_piros m od 30,102,9 	//Lábnyom piros fény - 2. LED kimenet
+	//int idl2_borialvasgomb_piros	int	id	30	102	9		id 0/1		visszaolvasás
+	//int	od	30	102	10		od 0-6		//infra jel tanitasa (1-6), illetve kilepes (0)
+
+	//OD8A		11,6				(2) bori es anni szobaja	
+	int oli_bori_tanulolampa m od 11,6,1 g		//bori tanuloasztal vilagitas
+//	int ili_bori_tanulolampa m id 11,6,1,100 g	//visszaolvasas
+	int oli_bori_olvasolampa m od 11,6,2 g		//bori olvasolampa
+//	int ili_bori_olvasolampa m id 11,6,2,100 g	//visszaolvasas
+	int oli_anni_olvasolampa m od 11,6,3 g		//anni olvasolampa
+//	int ili_anni_olvasolampa m id 11,6,3,100 g	//visszaolvasas
+	int oso_boriagy	m od 11,6,4 g			//konnektor bori ágyánál
+//	int iso_boriagy m id 11,6,4,10 g		//visszaolvasás
+
+	int ova_borianni m od 11,6,7 			//borianni futesszelep
+//	int iva_borianni m id 11,6,7,100 g		//visszaolvasas
+	int ipo_borianni_oda m id 11,6,10,1000 		//220V meglete
+
+
+
+
+//emfurdo
+
+	//VIKT		30,19				(6) emeleti furdo nyomogomb kivulrol, kapcsolo mogott	
+	int oli_emfurdo_lampa m od 30,19,1 g		//emeleti furdo vilagitas
+	int ism_emfurdo_lampa m id 30,19,8,0		//furdo vilagitas nyomogomb
+	int isw_emfurdo_lampa			//furdo vilagitas nyomogomb
+	//	int	id	30,19,6,10	id 0/1		//nyomogomb (0/1)
+	//	int	id	30,19,7	10	id 0/1		//nyomogomb (0/1)
+//	int ipo_emfurdo_lampa m id 30,19,9,100 g		//halozati feszultseg meglete (0/1)
+	//	int	od	30,19,10		od 0-6	//infra jel tanitasa (1-6), illetve kilepes (0)
+
+	//VIKT			30				emeleti fürdõ tükör mellett	
+//	int oli_emfurdo_tukorlampa m od 30,n,1 			//tükör világítás
+//	int ili_emfurdo_tukorlampa m id 30,n,1,10		//visszaolvasás
+//	int isw_emfurdo_tukorlampa m id	30,n,5,10		//fürdõ tükörvilágítás nyomógomb
+//ideiglenesek
+	int oli_emfurdo_tukorlampa			//tükör világítás
+	int ili_emfurdo_tukorlampa 		//visszaolvasás
+	int isw_emfurdo_tukorlampa 		//fürdõ tükörvilágítás nyomógomb
+
+
+	//KIJMK								emeleti furdo tukor mellett	
+	flo ite_emfurdo 		//IDEIGL   emeleti furdo homerseklet
+//	flo ite_emfurdo m it 0,0,1,100 g		//emeleti furdo homerseklet
+	int ilm_emfurdo 			//IDEIGL   emeleti furdo mert feny
+//	int ilm_emfurdo m ia 0,0,6,10 g			//emeleti furdo mert feny
+//	str odpk1_emfurdo m sto 0,0,7 g			//Kijelzo 1. sora
+//	str odpk2_emfurdo m sto 0,0,8 g			//Kijelzo 2. sora
+//	str odpk_emfurdo m sto 0,0,9 g			//teljes kijelzo
+	//	int	id		10		id 0/1		visszaolvasas
+	//	int	od		11		od 0/1		kimenet
+	//	int	id		11		id 0/1		visszaolvasas
+	//	int(2)				20		2 elemes tomb		infra tanitas inditasa
+//	int odpkd_emfurdo m od 0,0,21 g			//kijelzo idozitett kikapcsolasa, 1-255, 1/8sec
+//	int iswk_up_emfurdo m id 0,0,22,10 g		//FEL nyomogomb altal novelt valtozo
+//	int oswk_up_emfurdo m od 0,0,22 g		//visszairas
+//	int iswk_down_emfurdo m id 0,0,23,10 g		//LE nyomogomb altal novelt valtozo
+//	int oswk_down_emfurdo m od 0,0,23 g		//visszairas
+//	int iswk_enter_emfurdo m id 0,0,24,10 g		//ENTER nyomogomb altal novelt valtozo
+//	int oswk_enter_emfurdo m od 0,0,24 g		//visszairas
+//	int iswk_cancel_emfurdo m id 0,0,25,10 g	//CANCEL nyomogomb altal novelt valtozo
+//	int oswk_cancel_emfurdo m od 0,0,25 g		//visszairas
+	//	int	id			26	10			1. bemenethez tartozo novelt valtozo
+	//	int	od			26				visszairas
+	//	int	id			27	10			2. bemenethez tartozo novelt valtozo
+	//	int	od			27				visszairas
+
+	//OD8A						emeleti furdo kad mellett	emeleti furdo kad mellett
+	int oli_emfurdo_uvegfallampa 	//uvegfal vilagitas			IDEIGLENES!!!!!!!!!!!!
+//	int oli_emfurdo_uvegfallampa m od 0,0,1	g	//uvegfal vilagitas
+//	int ili_emfurdo_uvegfallampa m id 0,0,1,100 g	//visszaolvasas
+	//	int	od			2		od 0-80		
+	//	int	id			2	10	id 0-80		
+	//	int	od			3		od 0-80		
+	//	int	id			3	10	id 0-80		
+	//	int	od			4		od 0-80		
+	//	int	id			4	10	id 0-80		
+	//	int	od			5		od 0-80		
+	//	int	id			5	10	id 0-80		
+	//	int	od			6		od 0-80		
+	//	int	id			6	10	id 0-80		
+//	int ova_emfurdo m od 0,0,7 g			//furdo futes
+//	int iva_emfurdo m id 0,0,7,100 g			//visszaolvasas
+//	int ipo_emfurdo_oda m id 0,0,10,100 g		//220V meglete
+
+//udvar
+
+	//VIKT		30,21				(5) bejarat, kulso nyomogomb mogott	
+	int oli_bejarat_lampa m od 30,21,1 g		//bejarat felett lampa
+	int ism_bejarat_lampa m id 30,21,8,0		//kulso nyomogomb
+	int isw_bejarat_lampa				//kulso nyomogomb
+	//int	id	30	21	6	10	id 0/1		//nyomogomb (0/1)
+	//int	id	30	21	7	10	id 0/1		//nyomogomb (0/1)
+//	int ipo_bejarat_lampa m id 30,21,9,100 g		//halozati feszultseg meglete (0/1)
+	//int	od	30	21	10		od 0-6		//infra jel tanitasa (1-6), illetve kilepes (0)
+
+	//TIV		50,6				(2) terasz
+	flo ite_terasz m it 50,6,1,600 g		//terasz kulso homerseklet
+	//	int/flo	id			2	10	id 0/1		
+	//	int	id			3	10	id 0/1		
+	//	int	od			4		od 0/1		
+	//	int	od			5		od 0/1		
+	int ilm_terasz m ia 50,6,6,600 g		//terasz kulso mert feny
+	int odpti_terasz m rdn 50,6,38			//kijelzo egesz (-99 - +999)
+	flo odptf_terasz m rdnd 50,6,39 		//kijelzo 1tizedessel (-9.9 - +99.9)
+	int odptd_terasz m od 50,6,44 			//kijelzo idozitett kikapcsolasa, 1-255, 1/8sec
+
+	//VIKT 		30,30				(5) terasz
+	int oli_terasz_lampa m od 30,30,1 g		//terasz vilagitas
+	int ism_terasz_lampa m id 30,30,8,0 		//terasz vilagitas nyomogomb
+	int isw_terasz_lampa 		//terasz vilagitas nyomogomb
+	int isw_terasz_music 		//terasz zene nyomogomb
+	//	int	id	30,30,7,10	id 0/1		//marci tanulasztal gomb (0/1)
+//	int ipo_terasz_lampa m id 30,30,9,100 g		//halozati feszultseg meglete (0/1)
+	//	int	od	30,30,10		od 0-6		//infra jel tanitasa (1-6), illetve kilepes (0)
+
+	//VIKT		30,23				(5) tornac
+	int oli_tornac_lampa m od 30,23,1 g		//tornac vilagitas
+	int ism_tornac_lampa m id 30,23,8,0		//tornac vilagitas nyomogomb
+	int isw_tornac_lampa		//tornac vilagitas nyomogomb
+	//	int	id			6	10	id 0/1		//marci alvasgomb az agyanal (0/1)
+	//	int	id			7	10	id 0/1		//marci tanulasztal gomb (0/1)
+//	int ipo_tornac_lampa m id 30,23,9,100 g		//halozati feszultseg meglete (0/1)
+	//	int	od			10	od 0-6		//infra jel tanitasa (1-6), illetve kilepes (0)
+
+
+	//OD8A		11,8				(2) terasz hatso ablak mellett	haz diszfeny
+	int oli_hazdisz_utcaiablak m od	11,8,1 g	//utcai nyilaszarok
+//	int ili_hazdisz_utcaiablak m id 11,8,1 g	//visszaolvasas
+	int oli_hazdisz_udvariablak m od 11,8,2 g	//udvari ablakok
+//	int ili_hazdisz_udvariablak m id 11,8,2 g	//visszaolvasas
+	int oli_hazdisz_utcaihazel m od 11,8,3 g	//utcai hazelek
+//	int ili_hazdisz_utcaihazel m id 11,8,3 g	//visszaolvasas
+	int oli_hazdisz_teraszoszlop m od 11,8,4 g	//terasz oszlopok
+//	int ili_hazdisz_teraszoszlop m id 11,8,4 g	//visszaolvasas
+	int oli_hazdisz_tetoel m od 11,8,5 g		//tetoel
+//	int ili_hazdisz_tetoel m id 11,8,5 g		//visszaolvasas
+	//	int	od	11	8	6		od 0-80		
+	//	int	id	11	8	6	10	id 0-80		visszaolvasas
+	//	int	od	11	8	7		od 0-80		
+	//	int	id	11	8	7	10	id 0-80		visszaolvasas
+//	int ipo_hazdisz_oda m id 11,8,10,100 g		//220V meglete
+
+
+
+
+	int osw_terasz_zene				//terasz zene ki/bekapcs
+//	int isw_terasz_zene				//terasz zene állapot
+
+
+
+
+
+
+////////////////
+//egyebek
+
+	int olimin=0 				//vilagitasi ertek megadas minimuma
+	int olimax=80 				//maximuma
+	int ovamin=0 				//futoszelep ertek minimuma
+	int ovamax=80 				//maximuma
+
+endvariables
+
+
+
+program
+
+
+// valtozasjelzett portok konvertalasa
+if s.secht=1 then
+
+	if ism_nappali & 1 then
+	    isw_nappali_lampa=1		//nyomogombok korben
+	else
+	    isw_nappali_lampa=0		//nyomogombok korben
+	endif
+	if ism_nappali & 8 then
+	    isw_stnappali_itthon=1 	//infra 4.gomb - nappali itthon státusz
+	else
+	    isw_stnappali_itthon=0 	//infra 4.gomb - nappali itthon státusz
+	endif	    
+	if ism_nappali & 16 then
+    	    isw_stnappali_alszik=1	//infra 5.gomb - nappali alszik státusz
+	else
+    	    isw_stnappali_alszik=0	//infra 5.gomb - nappali alszik státusz
+	endif
+	if ism_nappali & 32 then
+	    isw_stnappali_tavol=1	//infra 6.gomb - nappali távol státusz
+	else
+	    isw_stnappali_tavol=0	//infra 6.gomb - nappali távol státusz
+	endif
+	ism_nappali=0
+
+
+	if ism_nappali_eloterlampa & 1 then	//eloter vilagitas nyomogombok
+    	    isw_nappali_eloterlampa=1	//eloter vilagitas nyomogombok
+	else
+	    isw_nappali_eloterlampa=0	//eloter vilagitas nyomogombok
+	endif
+	ism_nappali_eloterlampa=0	//eloter vilagitas nyomogombok
+	
+
+	if ism_nappali_etkezo & 1 then		//konyhaasztal vil.nyomogomb
+	    isw_nappali_etkezo=1		//konyhaasztal vil.nyomogomb
+	else
+	    isw_nappali_etkezo=0		//konyhaasztal vil.nyomogomb
+	endif
+	if ism_nappali_etkezo & 2 then		//konyhaasztal vil.nyomogomb
+	    isw_nappali_talalo=1		//talalo nyomogomb a mostani helyen es a hutonel is
+	else
+	    isw_nappali_talalo=0		//talalo nyomogomb a mostani helyen es a hutonel is
+	endif
+	if ism_nappali_etkezo & 4 then		//konyhaasztal vil.nyomogomb
+	    ims_nappali_talalo=1		//mozgaserzekelo a mostani nyomogombnal
+	else
+	    ims_nappali_talalo=0		//mozgaserzekelo a mostani nyomogombnal
+	endif
+	if ism_nappali_etkezo & 8 then		//konyhaasztal vil.nyomogomb
+	    isw_stkonyha_itthon=1		//infra 4.gomb - nappali itthon státusz
+	else
+	    isw_stkonyha_itthon=0		//infra 4.gomb - nappali itthon státusz
+	endif
+	if ism_nappali_etkezo & 16 then		//konyhaasztal vil.nyomogomb
+	    isw_stkonyha_alszik=1		//infra 5.gomb - nappali alszik státusz
+	else
+	    isw_stkonyha_alszik=0		//infra 5.gomb - nappali alszik státusz
+	endif
+	if ism_nappali_etkezo & 32 then		//konyhaasztal vil.nyomogomb
+	    isw_stkonyha_tavol=1		//infra 6.gomb - nappali távol státusz
+	else
+	    isw_stkonyha_tavol=0		//infra 6.gomb - nappali távol státusz
+	endif
+	ism_nappali_etkezo=0		//konyhaasztal vil.nyomogomb
+
+
+	if ism_nappali_kamralampa & 1 then		//kamra vilagitas nyomogomb
+	    isw_nappali_kamralampa=1		//kamra vilagitas nyomogomb
+	else
+	    isw_nappali_kamralampa=0		//kamra vilagitas nyomogomb
+	endif
+	if ism_nappali_kamralampa & 2 then		//kamra vilagitas nyomogomb
+	    ico_nappali_kamraajto=1		//kamra ajto nyitas
+	else
+	    ico_nappali_kamraajto=0		//kamra ajto nyitas
+	endif
+	ism_nappali_kamralampa=0		//kamra vilagitas nyomogomb
+
+
+	if ism_konyvtar_lampa & 1 then		//konyvtar vilagitas nyomogomb
+	    isw_konyvtar_lampa=1		//konyvtar vilagitas nyomogomb
+	else
+	    isw_konyvtar_lampa=0		//konyvtar vilagitas nyomogomb
+	endif
+	if ism_konyvtar_lampa & 8 then		//konyvtar vilagitas nyomogomb
+	    isw_stkonyvtar_itthon=1	//infra 4.gomb - könyvtár itthon státusz
+	else
+	    isw_stkonyvtar_itthon=0	//infra 4.gomb - könyvtár itthon státusz
+	endif
+	if ism_konyvtar_lampa & 16 then		//konyvtar vilagitas nyomogomb
+	    isw_stkonyvtar_alszik=1	//infra 5.gomb - könyvtár alszik státusz
+	else
+	    isw_stkonyvtar_alszik=0	//infra 5.gomb - könyvtár alszik státusz
+	endif
+	if ism_konyvtar_lampa & 32 then		//konyvtar vilagitas nyomogomb
+	    isw_stkonyvtar_tavol=1		//infra 6.gomb - könyvtár távol státusz
+	else
+	    isw_stkonyvtar_tavol=0		//infra 6.gomb - könyvtár távol státusz
+	endif
+	ism_konyvtar_lampa=0		//konyvtar vilagitas nyomogomb
+
+
+	if ism_halo_lampa & 1 then		//halo vilagitas nyomogomb
+    	    isw_halo_lampa=1		//halo vilagitas nyomogomb
+	else
+	    isw_halo_lampa=0		//halo vilagitas nyomogomb
+	endif
+	ism_halo_lampa=0		//halo vilagitas nyomogomb
+	if ism_halo_eloterlampa & 1 then	//elõtér vil. nyomógomb
+	    isw_halo_eloterlampa=1		//elõtér vil. nyomógomb
+	else
+	    isw_halo_eloterlampa=0		//elõtér vil. nyomógomb
+	endif
+	if ism_halo_eloterlampa & 8 then	//elõtér vil. nyomógomb
+	    isw_sthalo_itthon=1		//infra 4.gomb - háló itthon státusz
+	else
+	    isw_sthalo_itthon=0		//infra 4.gomb - háló itthon státusz
+	endif
+	if ism_halo_eloterlampa & 16 then	//elõtér vil. nyomógomb
+	    isw_sthalo_alszik=1		//infra 5.gomb - háló alszik státusz
+	else
+	    isw_sthalo_alszik=0		//infra 5.gomb - háló alszik státusz
+	endif
+	if ism_halo_eloterlampa & 32 then	//elõtér vil. nyomógomb
+	    isw_sthalo_tavol=1		//infra 6.gomb - háló távol státusz
+	else
+	    isw_sthalo_tavol=0		//infra 6.gomb - háló távol státusz
+	endif
+	ism_halo_eloterlampa=0		//elõtér vil. nyomógomb
+
+
+	if ism_halo_wclampa & 1 then		//WC vil. nyomogomb
+    	    isw_halo_wclampa=1		//WC vil. nyomogomb
+	else
+	    isw_halo_wclampa=0		//WC vil. nyomogomb
+	endif
+	ism_halo_wclampa=0		//WC vil. nyomogomb
+
+
+	if ism_halo_furdolampa & 1 then		//furdo vilagitas nyomogomb
+	    isw_halo_furdolampa=1		//furdo vilagitas nyomogomb
+	else
+	    isw_halo_furdolampa=0		//furdo vilagitas nyomogomb
+	endif
+	ism_halo_furdolampa=0		//furdo vilagitas nyomogomb
+
+
+	if ism_jatszo_lampa & 1 then		//jatszo vilagitas nyomogomb
+	    isw_jatszo_lampa=1		//jatszo vilagitas nyomogomb
+	else
+	    isw_jatszo_lampa=0		//jatszo vilagitas nyomogomb
+	endif
+	ism_jatszo_lampa=0		//jatszo vilagitas nyomogomb
+
+
+	if ism_jatszo_lepcsolampa & 1 then		//lepcso vilagitas nyomogomb
+	    isw_jatszo_lepcsolampa=1		//lepcso vilagitas nyomogomb
+	else
+	    isw_jatszo_lepcsolampa=0		//lepcso vilagitas nyomogomb
+	endif
+	ism_jatszo_lepcsolampa=0		//lepcso vilagitas nyomogomb
+
+
+	if ism_juli_lamp & 1 then		//juli nyomogomb ajto mellett (0/1)
+	    isw_juli_lamp=1		//juli nyomogomb ajto mellett (0/1)
+	else
+	    isw_juli_lamp=0		//juli nyomogomb ajto mellett (0/1)
+	endif
+	if ism_juli_lamp & 2 then		//juli nyomogomb ajto mellett (0/1)
+	    isw_juli_sleep=1		//juli alvasgomb az agyanal (0/1)
+	else
+	    isw_juli_sleep=0		//juli alvasgomb az agyanal (0/1)
+	endif
+	if ism_juli_lamp & 4 then		//juli nyomogomb ajto mellett (0/1)
+	    isw_juli_learn=1		//juli tanulas gomb az asztalanal (0/1)
+	else
+	    isw_juli_learn=0		//juli tanulas gomb az asztalanal (0/1)
+	endif
+	ism_juli_lamp=0		//juli nyomogomb ajto mellett (0/1)
+
+
+	if ism_marci_lampa & 1 then		//marci vilagitas nyomogomb
+	    isw_marci_lampa=1		//marci vilagitas nyomogomb
+	else
+	    isw_marci_lampa=0		//marci vilagitas nyomogomb
+	endif
+	if ism_marci_lampa & 2 then		//marci vilagitas nyomogomb
+	    isw_marci_alvas=1		//marci alvasgomb az agyanal (0/1)
+	else
+	    isw_marci_alvas=0		//marci alvasgomb az agyanal (0/1)
+	endif
+	if ism_marci_lampa & 4 then		//marci vilagitas nyomogomb
+	    isw_marci_ebreszto=1		//marci ebresztes gomb az agyanal (0/1)
+	else
+	    isw_marci_ebreszto=0		//marci ebresztes gomb az agyanal (0/1)
+	endif
+	if ism_marci_lampa & 8 then		//marci vilagitas nyomogomb
+	    isw_stmarci_itthon=1		//infra 4.gomb - marci itthon státusz
+	else
+	    isw_stmarci_itthon=0		//infra 4.gomb - marci itthon státusz
+	endif
+	if ism_marci_lampa & 16 then		//marci vilagitas nyomogomb
+	    isw_stmarci_alszik=1		//infra 5.gomb - marci alszik státusz
+	else
+	    isw_stmarci_alszik=0		//infra 5.gomb - marci alszik státusz
+	endif
+	if ism_marci_lampa & 32 then		//marci vilagitas nyomogomb
+	    isw_stmarci_tavol=1		//infra 6.gomb - marci távol státusz
+	else
+	    isw_stmarci_tavol=0		//infra 6.gomb - marci távol státusz
+	endif
+	ism_marci_lampa=0		//marci vilagitas nyomogomb
+
+
+	if ism_marci_olvaso & 1 then		//marci vilagitas nyomogomb
+	    isw_marci_olvaso=1		//marci vilagitas nyomogomb
+	else
+	    isw_marci_olvaso=0		//marci vilagitas nyomogomb
+	endif
+	if ism_marci_olvaso & 2 then		//marci vilagitas nyomogomb
+	    isw_marci_tanulo=1		//marci alvasgomb az agyanal (0/1)
+	else
+	    isw_marci_tanulo=0		//marci alvasgomb az agyanal (0/1)
+	endif
+	ism_marci_olvaso=0		//marci vilagitas nyomogomb
+
+
+	if ism_borianni_lampa & 1 then		//borianni szoba vilagitas nyomogomb
+	    isw_borianni_lampa=1		//borianni szoba vilagitas nyomogomb
+	else
+	    isw_borianni_lampa=0		//borianni szoba vilagitas nyomogomb
+	endif
+	if ism_borianni_lampa & 2 then		//borianni szoba vilagitas nyomogomb
+	    isw_bori_tanulo=1		//bori egérgomb a nyomógomb alatt
+	else
+	    isw_bori_tanulo=0		//bori egérgomb a nyomógomb alatt
+	endif
+	if ism_borianni_lampa & 4 then		//borianni szoba vilagitas nyomogomb
+	    isw_bori_tanulo2=1		//bori egérgomb a nyomógomb alatt
+	else
+	    isw_bori_tanulo2=0		//bori egérgomb a nyomógomb alatt
+	endif
+	ism_borianni_lampa=0		//borianni szoba vilagitas nyomogomb
+
+
+	if ism_emfurdo_lampa & 1 then		//furdo vilagitas nyomogomb
+	    isw_emfurdo_lampa=1		//furdo vilagitas nyomogomb
+	else
+	    isw_emfurdo_lampa=0		//furdo vilagitas nyomogomb
+	endif
+
+
+	if ism_bejarat_lampa & 1 then		//kulso nyomogomb
+	    isw_bejarat_lampa=1		//kulso nyomogomb
+	else
+	    isw_bejarat_lampa=0		//kulso nyomogomb
+	endif
+	ism_bejarat_lampa=0		//kulso nyomogomb
+
+
+	if ism_terasz_lampa & 1 then 		//terasz vilagitas nyomogomb
+	    isw_terasz_lampa=1 		//terasz vilagitas nyomogomb
+	else
+	    isw_terasz_lampa=0 		//terasz vilagitas nyomogomb
+	endif
+	if ism_terasz_lampa & 2 then 		//terasz vilagitas nyomogomb
+	    isw_terasz_music=1 		//terasz zene nyomogomb
+	else
+	    isw_terasz_music=0 		//terasz zene nyomogomb
+	endif
+	ism_terasz_lampa=0 		//terasz vilagitas nyomogomb
+
+
+	if ism_tornac_lampa & 1 then		//tornac vilagitas nyomogomb
+	    isw_tornac_lampa=1		//tornac vilagitas nyomogomb
+	else
+	    isw_tornac_lampa=0		//tornac vilagitas nyomogomb
+	endif
+	ism_tornac_lampa=0		//tornac vilagitas nyomogomb
+
+
+
+endif
+
+
+//portok statuszai, hibak kiirasa
+	//   A status lehetseges ertekei:
+	//   0 = rendben
+	//   1 = modul nem elerheto
+	//   2 = a modulon levo elem nem elerheto
+	//   3 = a modulon levo elem hibas
+	//   4 = a modul es a hozzakotott elem kozotti kommunikacio rossz
+	//   5 = beolvasas folyamatban
+	//   6 = a valtozo msv tulterheles miatt elveszett
+
+	if s.sect=1 then
+
+		if status(osw_1kazan)!=0 then
+			err=err+1
+		endif
+
+	//rendszerstatusz kiirasa
+		gotoxy 70,1
+		print "Hiba:"
+		print err
+		print " "
+		print status(osw_1kazan)
+	endif
+
+//kommunikacios hibak kiirasa
+	//	s.mcern		eggyel nol, ha kommunikacios hiba volt az msv-n
+	//	s.movern	eggyel nol, ha tulterheles miatt elveszett 1 valtozo az msv-n
+	//	s.gcern 	ez linux kommunikacios hiba esetén nol 1-el
+
+	//	s.mce1
+	//	s.mce2
+	//	s.mce3
+	//	s.mce4
+	//	s.mce5
+	//			ezekben az utoljara hibazott port cime van szoveg formaban. 
+	//			folyamatosan irodnak belejuk a portcimek, az 1.-tol kezdve. 
+	//			ha a vegere ert, akkor kezdi elolrol.
+
+	//	s.mcep 		ez mutatja, hogy melyik valtozot irta utoljara
+
+
+	if s.sect=1 then
+
+		gotoxy 60,2
+		print "mcern"
+		gotoxy 60,3
+		print s.mcern
+
+		gotoxy 67,2
+		print "movern"
+		gotoxy 67,3
+		print s.movern
+
+		gotoxy 74,2
+		print "gcern"
+		gotoxy 74,3
+		print s.gcern
+
+		
+		gotoxy 60,16
+		print s.mce1
+		gotoxy 60,17
+		print s.mce2
+		gotoxy 60,18
+		print s.mce3
+		gotoxy 60,19
+		print s.mce4
+		gotoxy 60,20
+		print s.mce5
+
+		gotoxy 60,22
+		print s.mcep
+
+
+	endif
+
+
+
+endprogram	

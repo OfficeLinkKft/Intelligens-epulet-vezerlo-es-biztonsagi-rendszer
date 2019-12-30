@@ -1,0 +1,649 @@
+progname halo		//halo ter eszkozeinek vezerlese
+
+//	a nap statuszanak megallapitasa
+//		program inditaskor es naponta ejfelkor
+//		ma es holnap / munkanap vagy hetvege
+
+//	statusz megallapitasa
+//		idopontok szerint percenkent
+//		gombok szerint masodpercenkent
+
+//	adott statuszhoz tartozo muveletek
+
+//	eszkozok definialasa
+//		vilagitas
+//		multimedia
+//		futes
+
+
+variables
+	//eszkozok
+
+	//napok es statuszaik 
+		int today 		//mai nap statusza	
+		int tomorrow 		//holnap nap statusza
+
+	//statuszok es idopontok
+		//astatus - halo statusza
+		int astatus=1 g	s	//aktualis statusz, alapallapot tavol
+
+		//stop		0 	vezérlés áll
+		
+		//out		1	távol
+		int rhour_1out=24 		//eltávozás órája, 24=nincs
+		int rminut_1out=0 		//perce
+						
+		//awake		2	ébred
+		int rhour_2awake=7 		//ébresztés idõ órája, 24=nincs
+		int rminut_2awake=0 		//perce
+		int rhour_2awake_weekend=24 	//hetvegi ébresztés idõ órája, 24=nincs
+		int rminut_2awake_weekend=0 	//perce
+
+		//athome	3	itthon
+		int rhour_3athome=24 		//itthon óra, , 24=nincs
+		int rminut_3athome=0 		//perc
+		int rhour_3athome_weekend=24 	//hétvégi itthon óra, 24=nincs
+		int rminut_3athome_weekend=0 	//perc
+
+		//sleep		4	alszik
+		int rhour_4sleep=24 		//alvás óra, 24=nincs
+		int rminut_4sleep=0 		//perc
+		int rhour_4sleep_weekend=24 	//hétvégi alvás órája, 24=nincs
+		int rminut_4sleep_weekend=0 	//perce
+
+
+
+//statuszokhoz tartozo vezerlesi ertekek
+
+	//port.oli_halo_eloterlampa				elõtér világítás
+	//port.ili_halo_eloterlampa				visszaolvasás
+		int rli_halo_eloterlampa_1=0 			//státuszokhoz tartozó világítási értékek, távol
+		int rli_halo_eloterlampa_2=80 	 		//ébred
+		int rli_halo_eloterlampa_3=80 			//itthon
+		int rli_halo_eloterlampa_4=0 			//alszik
+
+	//port.oli_halo_lampa					háló világítás
+	//port.ili_halo_lampa					visszaolvasás
+		int rli_halo_lampa_1=0 	 	 		//státuszokhoz tartozó világítási értékek, távol
+		int rli_halo_lampa_2=80  			//ébred
+		int rli_halo_lampa_3=80 			//itthon
+		int rli_halo_lampa_4=0  			//alszik
+
+	//port.oli_halo_juditlampa				judit olvasólámpa
+	//port.ili_halo_juditlampa				visszaolvasás
+		int rli_halo_juditlampa_1=30 			//státuszokhoz tartozó világítási értékek, távol
+		int rli_halo_juditlampa_2=70 			//ébred
+		int rli_halo_juditlampa_3=0 			//itthon
+		int rli_halo_juditlampa_4=0 			//alszik
+
+	//port.oli_halo_tamaslampa				tamás olvasólámpa
+	//port.ili_halo_tamaslampa				visszaolvasás
+		int rli_halo_tamaslampa_1=30 			//státuszokhoz tartozó világítási értékek, távol
+		int rli_halo_tamaslampa_2=70 			//ébred
+		int rli_halo_tamaslampa_3=0 			//itthon
+		int rli_halo_tamaslampa_4=70 			//alszik
+
+	//port.ova_halo						háló fûtésszelep
+	//port.iva_halo						visszaolvasás
+	int rte_halo=22 					//halo kert homerseklet
+		int rte_halo_1 	 				//státuszokhoz tartozó hõmérsékleti értékek, távol
+		int rte_halo_2 					//ébred
+		int rte_halo_3 					//itthon
+		int rte_halo_4 					//alszik
+						
+	//port.isw_halo_wclampa					WC vil. nyomógomb
+	//port.oli_halo_wclampa					WC világítás
+	//port.ili_halo_wclampa					visszaolvasás
+		int rli_halo_wclampa_1=0 			//státuszokhoz tartozó világítási értékek, távol
+		int rli_halo_wclampa_2 				//ébred
+		int rli_halo_wclampa_3 				//itthon
+		int rli_halo_wclampa_4 				//alszik
+
+	//port.oli_halo_wckislampa				WC háttérfény
+	//port.ili_halo_wckislampa				visszaolvasás
+		int rli_halo_wckislampa_1=0 			//státuszokhoz tartozó világítási értékek, távol
+		int rli_halo_wckislampa_2=80 			//ébred
+		int rli_halo_wckislampa_3=80 			//itthon
+		int rli_halo_wckislampa_4=0 			//alszik
+
+	//port.ove_halo_wc					WC ventilátor
+	//port.ive_halo_wc					visszaolvasás
+		int rve_halo_wc_1=0 				//státuszokhoz tartozó ventillátor értékek, itthon
+		int rve_halo_wc_2 				//ébred
+		int rve_halo_wc_3 				//itthon
+		int rve_halo_wc_4 				//alszik
+						
+	//port.oli_halo_furdolampa				fürdõ világítás
+	//port.ili_halo_furdolampa				visszaolvasás
+		int rli_halo_furdolampa_1=0 			//státuszokhoz tartozó világítási értékek, távol
+		int rli_halo_furdolampa_2=0 			//ébred
+		int rli_halo_furdolampa_3=0 			//itthon
+		int rli_halo_furdolampa_4=0 			//alszik
+
+	//port.oli_halo_furdokislampa				fürdõ háttérfény
+	//port.ili_halo_furdokislampa				visszaolvasás
+		int rli_halo_furdokislampa_1=0 			//státuszhoz tartozó vil.értékek, távol
+		int rli_halo_furdokislampa_2=80 		//ébred
+		int rli_halo_furdokislampa_3=80 		//itthon
+		int rli_halo_furdokislampa_4=0 			//alszik
+
+	//port.ova_halo_furdo					fürdõ fûtésszelep
+	//port.iva_halo_furdo					visszaolvasás
+	int rte_halo_furdo=23 					//furdo kert homersekleti ertek
+		int rte_halo_furdo_1 				//státuszhoz tartozó hõmérsékleti értékek, távol
+		int rte_halo_furdo_2 				//ébred
+		int rte_halo_furdo_3 				//itthon
+		int rte_halo_furdo_4 				//alszik
+
+
+//kozvetlen vezerlesi ertekek
+
+	//port.isw_halo_eloterlampa				elõtér vil. nyomógomb
+	//ha a háló sleep, marad is, és				astatus	
+	//port.oli_halo_eloterlampa		
+	int rli_halo_eloterlampa=80 				//háló elõtérlámpa kért közvetlen érték
+
+	//port.isw_halo_lampa					háló világítás nyomógomb
+	//ha a háló sleep, marad is, és				astatus	
+	//port.oli_halo_lampa		
+	int rli_halo_lampa=80 					//háló lámpa kért közvetlen érték
+
+
+	//port.isw_halo_juditlampa				judit olvasólámpa nyomógomb
+	//port.oli_halo_juditlampa		
+	int rli_halo_juditlampa=70 				//judit olvasólámpa
+							
+	//port.isw_halo_tamaslampa				tamás olvasólámpa nyomógomb
+	//port.oli_halo_tamaslampa		
+	int rli_halo_tamaslampa=70 				//tamás olvasólámpa
+
+	//port.isw_halo_furdolampa				fürdõ világítás nyomógomb
+	//port.oli_halo_furdolampa		
+	int rli_halo_furdolampa=80 				//fürdõ világítás
+
+	//port.isw_halo_wclampa					WC vil. nyomógomb
+	//port.oli_halo_wclampa		
+	int rli_halo_wclampa=80					//WC világítás
+	//port.ove_halo_wc		
+	int rve_halo_wc=70 					//WC ventilátor
+
+
+//kesleltetesek
+	int minut_delay_sleep=10				//alvas allapot eleresenek kesleltetes percben
+
+
+//segedvaltozok
+	int c1=0		//segedvaltozo, inditaskor 0, aztan 1
+
+	int a1			//statusz segedvaltozo
+	int a2			//statusz segedvaltozo
+	int a3			//statusz segedvaltozo
+	int a4			//statusz segedvaltozo
+
+	str s1			//szöveg segedvaltozo homerseklet kiirasara KIJMK-re
+	str s11
+	str s12
+
+	str s2
+	str s21
+	str s22
+
+endvariables
+
+defines
+	//eszkozok
+
+
+	//napok statuszai
+		workday=1		//munkanap
+		redday=0		//unnepnap, itthoni nap
+
+	//statuszok
+		//astatus - halo statusza
+		stop=0 			//vezérlés áll
+		out=1			//tavol
+		awake=2			//ébred
+		athome=3		//itthon
+		sleep=4			//alszik
+
+enddefines
+
+
+program
+
+//nap statusza megallapitasa
+	// nap statuszanak megallapitasa programinditaskor
+	if c1=0 then
+		c1=1
+		today=workday
+		tomorrow=workday
+		if s.dofw=4 then		//ma pentek van
+			tomorrow=redday	
+		endif
+		if s.dofw=5 then		//ma szombat van
+			today=redday
+			tomorrow=redday	
+		endif
+		if s.dofw=6 then		//ma vasarnap van
+			today=redday
+		endif
+	endif
+	// nap statuszanak megallapitasa napi rendszeresseggel
+	if s.hour=0 then
+	if s.min=0 then			//ez naponta 0:00-kor vizsgalja
+		today=workday
+		tomorrow=workday
+		if s.dofw=4 then		//ma pentek van
+			tomorrow=redday	
+		endif
+		if s.dofw=5 then		//ma szombat van
+			today=redday
+			tomorrow=redday	
+		endif
+		if s.dofw=6 then		//ma vasarnap van
+			today=redday
+		endif
+	endif				
+	endif
+
+
+//statusz megallapitasa idopontok szerint
+	//percenkent vizsgal, 
+	//tehat gombnyomasos statuszvaltas eseten
+	//a kovetkezo statuszidopontig valtozatlan marad
+	
+	if s.mint=1 then			//percenkent egyszer vizsgal
+	if astatus!=stop then			//ha vezerles nem all
+	
+		//ma hetkoznap van
+		if today=workday then
+
+			//2awake ebresztes
+			if rhour_2awake!=24 then		//ha az ora 24, nem vizsgal
+			if s.hour=rhour_2awake then		//ebresztes oraja
+			if s.min=rminut_2awake then		//perce
+				astatus=awake
+			endif
+			endif
+			endif	
+
+		endif
+
+		//holnap munkanap lesz, ezert a lefekves munkanap szerint
+		if tomorrow=workday then
+
+			//sleep	4	alszik
+			if rhour_4sleep!=24 then	//ha az ora 24, nem vizsgal
+			if s.hour=rhour_4sleep then	//alvas oraja
+			if s.min=rminut_4sleep then	//perce
+				astatus=sleep
+			endif
+			endif
+			endif
+		endif
+
+		//ma hetvege van, unnepnap, ezert ebresztes hetvegi rend szerint
+		if today=redday then	
+
+			//2awake	hetvege, ebreszto
+			if rhour_2awake_weekend!=24 then	//ha az ora 24, nem vizsgal
+			if s.hour=rhour_2awake_weekend then	//hetvegi ebresztes oraja
+			if s.min=rminut_2awake_weekend then	//perce
+				astatus=awake
+			endif
+			endif
+			endif
+		endif
+
+		//holnap hetvege lesz, ezert a lefekves hetvege szerint
+		if tomorrow=redday then	
+
+			//sleep	4	alszik
+			if rhour_4sleep_weekend!=24 then	//ha az ora 24, nem vizsgal
+			if s.hour=rhour_4sleep_weekend then	//hetvegi alvas oraja
+			if s.min=rminut_4sleep_weekend then	//perce
+				astatus=sleep
+			endif
+			endif
+			endif
+		endif
+
+	endif
+	endif
+	
+//statusz megallapitasa nyomogombok es mas statuszok szerint
+	if s.secht=1 then
+	if astatus!=stop then
+
+	//ha az epulet tavol lesz, ez is
+		if a1!=epulet.astatus then			//ha valtozott az epulet statusza
+		//ha az epulet statusza tavol, ez is tavol lesz
+			if epulet.astatus=1 then		//epulet statusza tavol (1far)
+				astatus=out
+			endif
+
+		a1=epulet.astatus				//segedvaltozo beallitasa
+		endif
+
+
+	//elõtér vil. nyomógomb
+		if port.isw_halo_eloterlampa!=0 then		//elõtér vil. nyomógomb jelzett
+
+			//ha távol volt, itthon lesz
+			if astatus=out then
+				astatus=athome
+			else
+
+			//ha itthon volt, alszik lesz
+			if astatus=athome then
+				astatus=sleep
+			else
+
+			//ha alszik volt, ‚bred lesz
+			if astatus=sleep then
+				astatus=awake
+
+			//egy‚bk‚nt t vol lesz
+			else
+				astatus=out			
+
+			endif
+			endif
+			endif
+
+		port.isw_halo_eloterlampa=0			//valtozo nullazas
+		endif
+		
+
+	//háló világítás nyomógomb
+		if port.isw_halo_lampa!=0 then			//háló világítás nyomógomb
+
+			//csak közvetlen világitási érték
+			if port.oli_halo_lampa!=rli_halo_lampa then
+				port.oli_halo_lampa=rli_halo_lampa
+			else
+				port.oli_halo_lampa=0
+			endif
+
+		port.isw_halo_lampa=0				//valtozo nullazas
+		endif
+
+	//háló alvás/ébred státuszváltó - sárga csillag
+//		if port.isw_halo_alvas!=0 then
+
+			//ha a háló nem volt sleep, sleep lesz			
+			//ha a háló sleep volt, awake lesz			
+//			if astatus!=sleep then
+//				astatus=sleep
+//			else
+//				astatus=awake
+//			endif
+
+//		port.isw_halo_alvas=0
+//		endif
+
+	//távirányító
+		if port.isw_sthalo_itthon=1 then
+			astatus=athome
+		endif
+		if port.isw_sthalo_alszik=1 then
+			astatus=sleep
+		endif
+		if port.isw_sthalo_tavol=1 then
+			astatus=out
+		endif
+
+	endif
+	endif
+
+
+///////////////////////////////////////////////////////////////
+
+//kert ertekek beallitasa statuszvaltaskor
+
+//astatus, halo statusza
+	if s.secht=1 then			//masodpercenkent vizsgalva
+	if a2!=astatus then			//ha valtozott a statusz
+
+	//tavol eseten, 1out
+		if astatus=out then
+
+			port.oli_halo_eloterlampa=rli_halo_eloterlampa_1		//elõtér világítás
+			port.oli_halo_lampa=rli_halo_lampa_1				//háló világítás
+			port.oli_halo_juditlampa=rli_halo_juditlampa_1			//judit olvasólámpa
+			port.oli_halo_tamaslampa=rli_halo_tamaslampa_1			//tamás olvasólámpa
+			port.oli_halo_wclampa=rli_halo_wclampa_1			//WC világítás
+			port.oli_halo_wckislampa=rli_halo_wckislampa_1			//WC háttérfény
+
+			port.ove_halo_wc=rve_halo_wc_1					//WC ventilátor
+
+			port.oli_halo_furdolampa=rli_halo_furdolampa_1			//fürdõ világítás
+			port.oli_halo_furdokislampa=rli_halo_furdokislampa_1		//fürdõ háttérfény
+
+			rte_halo=rte_halo_1						//háló kert homerseklet
+			rte_halo_furdo=rte_halo_furdo_1					//fürdõ kért hõmérséklet
+
+
+			//kijelzore iras
+		//	port.odpk1_halo="tavol"
+
+//			port.odl1_haloalvasgomb_kek=0					//háló csillag kék led
+//			port.odl2_haloalvasgomb_piros=1					//haló csillag piros led
+
+			port.orgbled_halo_eloterlampa=1					//elõtérlámpa gomb RGB LED, 1=red, 2=green, 4=blue
+
+
+		endif
+
+
+	//ebred eseten, awake=2
+		if astatus=awake then
+
+			//ha kint sötét van (epulet.sun moon vagy night), beallitas, egyebkent fények nullára
+			if epulet.sun<3 then
+				port.oli_halo_eloterlampa=rli_halo_eloterlampa_2	//elõtér világítás
+				port.oli_halo_lampa=rli_halo_lampa_2			//háló világítás
+				port.oli_halo_juditlampa=rli_halo_juditlampa_2		//judit olvasólámpa
+				port.oli_halo_tamaslampa=rli_halo_tamaslampa_2		//tamás olvasólámpa
+				port.oli_halo_wckislampa=rli_halo_wckislampa_2		//WC háttérfény
+				port.oli_halo_furdokislampa=rli_halo_furdokislampa_2	//fürdõ háttérfény
+			else
+				port.oli_halo_eloterlampa=0				//elõtér világítás
+				port.oli_halo_lampa=0					//háló világítás
+				port.oli_halo_juditlampa=0				//judit olvasólámpa
+				port.oli_halo_tamaslampa=0				//tamás olvasólámpa
+				port.oli_halo_wckislampa=0				//WC háttérfény
+				port.oli_halo_furdokislampa=0				//fürdõ háttérfény
+			endif
+
+			//port.oli_halo_wclampa=rli_halo_wclampa_2			//WC világítás
+
+			//port.ove_halo_wc=rve_halo_wc_2				//WC ventilátor
+
+			port.oli_halo_furdolampa=rli_halo_furdolampa_2			//fürdõ világítás
+
+			rte_halo=rte_halo_2						//háló kert homerseklet
+			rte_halo_furdo=rte_halo_furdo_2					//fürdõ kért hõmérséklet
+
+
+			//kijelzore iras
+		//	port.odpk1_halo="ebred"
+
+//			port.odl1_haloalvasgomb_kek=0					//háló csillag kék led
+//			port.odl2_haloalvasgomb_piros=0					//haló csillag piros led
+
+			port.orgbled_halo_eloterlampa=3					//elõtérlámpa gomb RGB LED, 1=red, 2=green, 4=blue
+
+		endif
+
+
+
+	//itthon eseten, athome=3		
+		if astatus=athome then
+
+			//ha kint sötét van (epulet.sun moon vagy night), beallitas, egyebkent fények nullára
+			if epulet.sun<3 then
+				port.oli_halo_eloterlampa=rli_halo_eloterlampa_3	//elõtér világítás
+				port.oli_halo_lampa=rli_halo_lampa_3			//háló világítás
+				port.oli_halo_wckislampa=rli_halo_wckislampa_3		//WC háttérfény
+				port.oli_halo_furdokislampa=rli_halo_furdokislampa_3	//fürdõ háttérfény
+			else
+				port.oli_halo_eloterlampa=0				//elõtér világítás
+				port.oli_halo_lampa=0					//háló világítás
+				port.oli_halo_wckislampa=0				//WC háttérfény
+				port.oli_halo_furdokislampa=0				//fürdõ háttérfény
+			endif
+
+			port.oli_halo_juditlampa=rli_halo_juditlampa_3			//judit olvasólámpa
+			port.oli_halo_tamaslampa=rli_halo_tamaslampa_3			//tamás olvasólámpa
+			//port.oli_halo_wclampa=rli_halo_wclampa_3			//WC világítás
+
+			//port.ove_halo_wc=rve_halo_wc_3				//WC ventilátor
+
+			port.oli_halo_furdolampa=rli_halo_furdolampa_3			//fürdõ világítás
+
+			rte_halo=rte_halo_3						//háló kert homerseklet
+			rte_halo_furdo=rte_halo_furdo_3					//fürdõ kért hõmérséklet
+
+
+			//kijelzore iras
+		//	port.odpk1_halo="itthon"
+
+//			port.odl1_haloalvasgomb_kek=0					//háló csillag kék led
+//			port.odl2_haloalvasgomb_piros=0					//haló csillag piros led
+
+			port.orgbled_halo_eloterlampa=2					//elõtérlámpa gomb RGB LED, 1=red, 2=green, 4=blue
+
+
+		endif
+
+
+
+	//alszik eseten, sleep=4
+		if astatus=sleep then
+
+			port.oli_halo_eloterlampa=rli_halo_eloterlampa_4		//elõtér világítás
+			port.oli_halo_lampa=rli_halo_lampa_4				//háló világítás
+			port.oli_halo_juditlampa=rli_halo_juditlampa_4			//judit olvasólámpa
+			port.oli_halo_tamaslampa=rli_halo_tamaslampa_4			//tamás olvasólámpa
+
+			//port.oli_halo_wclampa=rli_halo_wclampa_4			//WC világítás
+			port.oli_halo_wckislampa=rli_halo_wckislampa_4			//WC háttérfény
+			//port.ove_halo_wc=rve_halo_wc_4				//WC ventilátor
+
+			port.oli_halo_furdolampa=rli_halo_furdolampa_4			//fürdõ világítás
+			port.oli_halo_furdokislampa=rli_halo_furdokislampa_4		//fürdõ háttérfény
+
+			rte_halo_furdo=rte_halo_furdo_4					//fürdõ kért hõmérséklet
+			rte_halo=rte_halo_4						//háló kert homerseklet
+
+			//kijelzore iras
+		//	port.odpk1_halo="alszik"
+
+//			port.odl1_haloalvasgomb_kek=1					//háló csillag kék led
+//			port.odl2_haloalvasgomb_piros=0					//haló csillag piros led
+
+			port.orgbled_halo_eloterlampa=4					//elõtérlámpa gomb RGB LED, 1=red, 2=green, 4=blue
+
+		endif
+
+
+
+	endif
+
+	a2=astatus				//segedvaltozo beallitasa
+	endif
+
+
+
+//kert ertekek beallitasa keslelteskor
+
+//astatus, halo statusza
+
+
+
+
+//kozvetlen vezerlesek masodpercenkent
+	if s.secht=1 then
+
+	//judit olvasólámpa
+		if port.isw_halo_juditlampa!=0 then				//judit olvasólámpa nyomógomb
+
+			if port.oli_halo_juditlampa!=rli_halo_juditlampa then	//ha a fény nem volt a kért érték
+				port.oli_halo_juditlampa=rli_halo_juditlampa	//legyen a kért érték
+			else
+				port.oli_halo_juditlampa=0			//ha a kért érték volt, kikapcs
+			endif
+
+		port.isw_halo_juditlampa=0					//nyomogomb port nullazasa
+		endif
+
+	//tamas olvasólámpa
+		if port.isw_halo_tamaslampa!=0 then
+
+			if port.oli_halo_tamaslampa!=rli_halo_tamaslampa then
+				port.oli_halo_tamaslampa=rli_halo_tamaslampa
+			else
+				port.oli_halo_tamaslampa=0
+			endif
+
+		port.isw_halo_tamaslampa=0
+		endif
+							
+	//furdo lampa
+		if port.isw_halo_furdolampa!=0 then
+
+			if port.oli_halo_furdolampa!=rli_halo_furdolampa then
+				port.oli_halo_furdolampa=rli_halo_furdolampa
+			else
+				port.oli_halo_furdolampa=0
+			endif
+
+		port.isw_halo_furdolampa=0
+		endif
+
+	//wc vilagitas es ventillator
+		if port.isw_halo_wclampa!=0 then			//WC vil. nyomógomb - ha volt változás			
+
+			if port.oli_halo_wclampa!=rli_halo_wclampa then	//ha nem volt felkapcsolva
+				port.oli_halo_wclampa=rli_halo_wclampa	//WC világítás fel
+				port.ove_halo_wc=rve_halo_wc		//WC ventilátor fel
+			else
+				port.oli_halo_wclampa=0			//WC világítás le
+				port.ove_halo_wc=0			//WC ventilátor le
+			endif
+
+		port.isw_halo_wclampa=0					//valtozo nullazas
+		endif
+
+
+
+
+	endif		//masodperc ciklus lezarasa
+
+
+//////////////////////////////////////////////////////////////
+
+//kijelzok kezelese percenkent
+
+	if s.mint=1 then	
+		
+	//halo furdo kijelzo
+
+		//elso sor: nappali / kulso homerseklet
+		port.odpk1_halo_furdo="Melegviz"
+
+		//masodik sor: kert nappali homerseklet, kazan megy/all	
+		ntostr port.ite_melegviz,s21
+		s2=s21+"/"
+		ntostr port.ite_melegviz_vissza,s21
+		s2=s2+s21
+		s2=s2+"oC"
+		port.odpk2_halo_furdo=s2
+			
+	endif	
+
+
+endprogram
+
+	

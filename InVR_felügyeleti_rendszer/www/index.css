@@ -1,0 +1,131 @@
+body {
+	font-family:Arial;
+	background-image:url(bg-pattern1.jpg);	
+}
+.loginbox {
+	width:330px;
+	margin:auto;
+	padding:5px;
+	font-size:12px;
+	font-weight:normal;
+	color:#333333;
+}
+.login {
+	position:relative;
+	left:0px;
+	top:0px;
+	float:left;
+	width:300px;
+	height:140px;
+	height:200px;
+	padding:15px;
+	background-color:#fff;
+	border:10px;
+	border-radius:8px;
+}
+
+.logo {
+	position:absolute;
+	left:260px;
+	top:0px;
+	margin:0px;
+	width:60px;
+	height:40px;
+	padding-top:10px;
+	padding-left:21px;
+	border:10px;
+	border-bottom-left-radius:8px;
+	background-image:url(bg-pattern1.jpg);	
+}
+.head {
+	width:220px;
+	font-size:14px;
+	font-weight:bold;
+}
+.form {
+	width:270px;
+	margin:auto;
+	margin-top:20px;
+	font-size:14px;
+	font-weight:bold;
+}
+.leftbox {
+	float:left;
+	width:80px;
+	padding-top:8px;
+}
+.rightbox {
+	float:right;
+	width:190px;
+}
+.langbox {
+	width:260px;
+	margin-left:50px;
+	padding-top:100px;
+}
+
+.button {
+	background-color:lightgray;
+}
+
+.icon {
+	float:left;
+	margin:0px;
+	width:49px;
+	height:49px;
+	border:5px;
+	border-radius:3px;
+	padding:0px;
+	background-color:#ffffff;
+	font-size:12px;
+}
+.icontext {
+	font-size:12px;
+}
+
+.camera {
+	float:left;
+	width:656px;
+	height:380px;
+	margin-left:10px;
+	padding-bottom:0px;
+	padding-top:10px;
+	background-color:#ffffff;
+	border:10px;
+	border-radius:14px;
+	text-align:center;
+	z-index:-1;
+}
+.camhead {
+	width:300px;
+	margin-bottom:2px;
+	padding:1px;
+	padding-bottom:4px;
+	text-align:center;
+ 	opacity:0.8;
+}
+
+
+
+
+.impr {
+	height:26px;
+	margin:auto;
+	padding:5px;
+	clear:both;	
+}
+.footer {
+	padding:0px 5px 0px 0px;
+	font-size:11px;
+	font-weight:normal;
+ 	text-align:right;
+}
+
+A {
+	color: #444444;
+	text-decoration:none;
+}
+A:hover {
+	color: #000000;
+	text-decoration:none;
+}

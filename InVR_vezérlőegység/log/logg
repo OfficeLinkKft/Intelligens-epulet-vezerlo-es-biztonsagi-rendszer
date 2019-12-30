@@ -1,0 +1,26 @@
+
+************************************
+
+2019.12.10. 20:18:01 Az InVR vezerlo program 1.1 elindult.
+
+2019.12.10. 20:18:01 SQL konnekt nemmegy. Access denied for user 'root'@'localhost' (using password: YES)
+
+2019.12.10. 20:18:01 A system program rendben beolvasva a system.mcs fajlbol.
+
+2019.12.10. 20:18:01 A port program rendben beolvasva a port.mcs fajlbol.
+
+2019.12.10. 20:18:01 A epulet program rendben beolvasva a epulet.mcs fajlbol.
+
+2019.12.10. 20:18:01 A halo program rendben beolvasva a halo.mcs fajlbol.
+
+2019.12.10. 20:18:01 A nappali program rendben beolvasva a nappali.mcs fajlbol.
+
+2019.12.10. 20:18:01 A status program rendben beolvasva a status.mcs fajlbol.
+
+2019.12.10. 20:18:01 A konfiguracios fajl rendben beolvasva.
+
+2019.12.10. 20:35:00 SQL konnekt nemmegy. Access denied for user 'root'@'localhost' (using password: YES)
+
+2019.12.10. 20:35:23 A vezerloprogram leallitva.
+
+

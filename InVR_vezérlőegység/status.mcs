@@ -1,0 +1,907 @@
+progname status		// terek es statuszok kiirasa
+
+//statuszokat es azok ertekeit lasd a definicioknal
+
+variables
+
+//segedvaltozok
+	int c1=0		//segedvaltozo, inditaskor 0, aztan 1
+	int c2=0
+	
+	int a			//regi homero kompenzalas
+	int p			//pill teljesítmény összegzés
+
+endvariables
+
+defines	
+	//season - evszak statusza
+	spring=1
+	summer=2
+	fall=3
+	winter=4
+
+	//sun - napfeny statusza
+	night=1		//ejszaka
+	moon=2		//holdfeny
+	bright=3	//vilagos	
+	sunshine=4	//sut a nap
+
+	//napok statuszai
+	workday=1		//ma
+	redday=0		//holnap
+
+	//statuszok
+	stop=0			//vezerles all
+	out=1			//tavol
+	awake=2			//ebred
+	active=3		//aktiv
+	bath=4			//furdik
+	rest=6			//pihen
+	sleep=7			//alszik
+
+	//epulet, udvar statuszok
+	far=1			//tavol
+	athome=2		//itthon (nyitva)
+	closed=3		//zarva
+
+
+enddefines
+
+
+
+program
+
+//kepernyo //////////////////////////////////////////////////////////////////
+//statuszok kiirasa
+
+	if s.sect=1 then	// ez masodpercenkent 1*1
+
+	//evszak statusz kiirasa 
+		printv epulet.season,12,25,1
+		if epulet.season<=spring then
+			epulet.season=spring		//ha tullep, akkor visszaallit
+			print " tavasz"
+		endif
+		if epulet.season=summer then
+			print " nyar  "
+		endif
+		if epulet.season=fall then
+			print " osz   "
+		endif
+		if epulet.season>=winter then
+			epulet.season=winter		//ha tullep, akkor visszaallit
+			print " tel  "
+		endif
+
+	//napsutes statusz kiirasa 
+		printv epulet.sun,1,25,1
+
+		if epulet.sun<=night then		//teljes sotetseg
+			epulet.sun=night		//ha tullep, visszaallit
+			print " ejszaka"
+		endif
+
+		if epulet.sun=moon then		//holdfeny
+			print " holdfeny"
+		endif
+
+		if epulet.sun=bright then		//vilagos
+			print " vilagos"
+		endif
+
+		if epulet.sun>=sunshine then		//ha sut a nap
+			epulet.sun=sunshine		//ha tullep, akkor visszaallit
+			print " napsutes"
+		endif
+	
+
+	endif
+
+// Terek es statuszaik
+	if s.sect=1 then		//masodpercenkent egyszer
+
+	//fejlec
+		//gotoxy 2,3
+		//print "Terek"
+		
+		gotoxy 13,3
+		print "ma"
+		gotoxy 20,3
+		print "holn"
+
+		gotoxy 26,3
+		print "statusz"
+
+
+	//adatok
+
+
+	//epulet		
+		gotoxy 2,4
+		print "epulet"
+
+		//ma erteke
+		printv epulet.today,12,4,1
+		if epulet.today<=redday then
+			epulet.today=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if epulet.today>=workday then
+			epulet.today=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//holnap erteke
+		printv epulet.tomorrow,19,4,1
+		if epulet.tomorrow<=redday then
+			epulet.tomorrow=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if epulet.tomorrow>=workday then
+			epulet.tomorrow=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+
+		//statusz erteke
+		printv epulet.astatus,26,4,1
+		if epulet.astatus<=0 then	//0 stop
+			epulet.astatus=0	//ha tullep, akkor visszaallit
+			print "stop "
+		endif
+		if epulet.astatus=1 then	//1 far
+			print "tavol"
+		endif
+		if epulet.astatus=2 then	//2 athome
+			print "itthon"
+		endif
+		if epulet.astatus>=3 then	//3 closed
+			epulet.astatus=3	//ha tullep, akkor visszaallit
+			print "zarva"
+		endif
+
+
+		//melegviz kiirasa
+
+		gotoxy 4,5
+		print "melegviz"
+
+		gotoxy 20,5
+		print "gázbojler: "
+		a=port.ite_melegviz		//regi homero kompenzalas
+		print a				//gázbojler homero
+		print " oC"
+
+		gotoxy 40,5
+		print "cirk.: "
+		a=port.ite_melegviz_vissza	//regi homero kompenzalas
+		print a				//cirkulációs melegvíz vissza
+		print " oC"
+
+		gotoxy 60,5
+		print "sziv.: "
+		a=port.oli_melegviz_keringeto*100
+		a=a/80
+		print a				//cirkulációs melegvíz vissza
+		print " %"
+
+
+		gotoxy 6,6
+		print "1. bojler also: "
+		a=port.ite_1bojler_also		//regi homero kompenzalas
+		print a				//1. bojler also homero
+		print " oC"
+
+		gotoxy 30,6
+		print "felso: "
+		a=port.ite_1bojler_felso	//regi homero kompenzalas
+		print a				//1. bojler felso homero
+		print " oC"
+
+		gotoxy 45,6
+		print "kert: "
+		printv epulet.rtemax_1bojler_also,51,6,1	//1. bojler also homero kert ertek
+		print " oC"
+
+		gotoxy 60,6
+		if port.osw_1bojler_nappaliaram=1 then	//1. bojler ki/be kapcsolo, nappali aram
+			print "nappali"
+		else
+			print "all    "
+		endif
+		gotoxy 60,6
+		if port.osw_1bojler_ejszakaiaram=1 then	//1. bojler ki/be kapcsolo, ejszakai aram
+			print "ejszakai"
+		endif
+
+		gotoxy 70,6
+		print epulet.ihour_1bojler_nappaliaram	//1. bojler nappali aram uzemora
+		gotoxy 75,6
+		print epulet.ihour_1bojler_ejszakaiaram	//1. bojler ejszakai aram uzemora
+
+
+		gotoxy 6,7
+		print "2. bojler also: "
+		a=port.ite_2bojler_also		//regi homero kompenzalas
+		print a				//2. bojler also homero
+		print " oC"
+
+		gotoxy 30,7
+		print "felso: "
+		a=port.ite_2bojler_felso	//regi homero kompenzalas
+		print a				//2. bojler felso homero
+		print " oC"
+
+		gotoxy 45,7
+		print "kert: "
+		print epulet.rtemax_2bojler_also	//2. bojler also homero kert ertek
+		print " oC"
+
+		gotoxy 60,7
+		if port.osw_2bojler_nappaliaram=1 then	//2. bojler ki/be kapcsolo, nappali aram
+			print "nappali"
+		else
+			print "all    "
+		endif
+		gotoxy 60,7
+		if port.osw_2bojler_ejszakaiaram=1 then	//2. bojler ki/be kapcsolo, ejszakai aram
+			print "ejszakai"
+		endif
+
+		gotoxy 70,7
+		print epulet.ihour_2bojler_nappaliaram	//2. bojler nappali aram uzemora
+		gotoxy 75,7
+		print epulet.ihour_2bojler_ejszakaiaram	//2. bojler ejszakai aram uzemora
+
+
+		//futes kiirasa
+		gotoxy 4,8
+		print "futes"
+
+		gotoxy 6,9
+		print "1. kazan elore: "
+		a=port.ite_1kazan_eloremenoviz-20	//regi homero kompenzalas
+		print a					//1. kazan eloremeno viz homerseklet
+		print " oC"
+
+		gotoxy 30,9
+		print "vissza: "
+		a=port.ite_1kazan_visszateroviz-20	//regi homero kompenzalas
+		print a 				//1. kazan visszatero viz homerseklet
+		print " oC"
+
+		gotoxy 60,9
+		if port.osw_1kazan=1 then		//1. kazan ki/be kapcsolo
+			print "megy"
+		else
+			print "all"
+		endif
+
+		gotoxy 70,9
+		print epulet.ihour_1kazan		//1. kazan uzemora
+		print " ora"
+
+
+		gotoxy 6,10
+		print "2. kazan elore: "
+		a=port.ite_2kazan_eloremenoviz-20	//regi homero kompenzalas
+		print a					//2. kazan eloremeno viz homerseklet
+		print " oC"
+
+		gotoxy 30,10
+		print "vissza: "
+		a=port.ite_2kazan_visszateroviz-20	//regi homero kompenzalas
+		print a					//2. kazan visszatero viz homerseklet
+		print " oC"
+
+		gotoxy 60,10
+		if port.osw_2kazan=1 then		//2. kazan ki/be kapcsolo
+			print "megy"
+		else
+			print "all"
+		endif
+
+		gotoxy 70,10
+		print epulet.ihour_2kazan		//2. kazan uzemora
+		print " ora"
+
+
+
+	//nappali
+		gotoxy 2,12
+		print "nappali"
+
+		//ma erteke
+		printv nappali.today,12,12,1
+		if nappali.today<=redday then
+			nappali.today=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if nappali.today>=workday then
+			nappali.today=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//holnap erteke
+		printv nappali.tomorrow,19,12,1
+		if nappali.tomorrow<=redday then
+			nappali.tomorrow=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if nappali.tomorrow>=workday then
+			nappali.tomorrow=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//nappali statusz erteke
+		printv nappali.astatus,26,12,1
+		if nappali.astatus<=0 then		//0 stop
+			nappali.astatus=0		//ha tullep, akkor visszaallit
+			print "stop "
+		endif
+		if nappali.astatus=1 then		//1 out
+			print "tavol"
+		endif
+		if nappali.astatus=2 then		//athome=2		//itthon
+			print "itthon"
+		endif
+		if nappali.astatus=3 then		//awake=3		//ebred
+			print "ebred"
+		endif
+		if nappali.astatus=4 then		//active=4		//aktiv
+			print "aktiv"
+		endif
+		if nappali.astatus>=10 then		//sleep=10		//alszik 
+			nappali.astatus=10		//ha tullep, akkor visszaallit
+			print "alszik"
+		endif
+
+		//konyha statusz erteke
+		printv nappali.astatus_konyha,60,12,1
+		if nappali.astatus_konyha<=0 then	//0 stop
+			nappali.astatus_konyha=0		//ha tullep, akkor visszaallit
+			print "stop "
+		endif
+		if nappali.astatus_konyha=1 then	//1 out
+			print "tavol"
+		endif
+		if nappali.astatus_konyha=2 then	//athome=2		//itthon
+			print "itthon"
+		endif
+		if nappali.astatus_konyha=3 then	//awake=3		//ebred
+			print "ebred"
+		endif
+		if nappali.astatus_konyha=6 then	//eat=6			//eszik	
+			print "eszik"
+		endif
+		if nappali.astatus_konyha=7 then	//cook=7		//foz
+			print "foz"
+		endif
+		if nappali.astatus_konyha=8 then	//dishup=8		//talal
+			print "talal"
+		endif
+		if nappali.astatus_konyha>=10 then	//sleep=10		//alszik 
+			nappali.astatus_konyha=10	//ha tullep, akkor visszaallit
+			print "alszik"
+		endif
+		
+		//homerseklet es fenyero kiirasa
+		gotoxy 37,12
+		print port.ite_nappali
+		print " oC"
+		gotoxy 46,12
+		print port.ilm_nappali
+
+		//kert nappali homerseklet
+		printv port.rte_nappali,50,12,1
+		print " oC"
+
+
+	//konyvtar
+		gotoxy 2,13
+		print "konyvtar"
+
+		//ma erteke
+		printv konyvtar.today,12,13,1
+		if konyvtar.today<=redday then
+			konyvtar.today=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if konyvtar.today>=workday then
+			konyvtar.today=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//holnap erteke
+		printv konyvtar.tomorrow,19,13,1
+		if konyvtar.tomorrow<=redday then
+			konyvtar.tomorrow=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if konyvtar.tomorrow>=workday then
+			konyvtar.tomorrow=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//statusz erteke
+		printv konyvtar.astatus,26,13,1
+
+		if konyvtar.astatus<=0 then		//0 stop
+			konyvtar.astatus=0		//ha tullep, akkor visszaallit
+			print "stop "
+		endif
+		if konyvtar.astatus=1 then		//1 out
+			print "tavol"
+		endif
+		if konyvtar.astatus=2 then		//awake=2		//ebred
+			print "ebred"
+		endif
+		if konyvtar.astatus=3 then		//active=3		//aktiv
+			print "aktiv"
+		endif
+		if konyvtar.astatus=4 then		//tv=4			//tv, kep es hang is	
+			print "tv"
+		endif
+		if konyvtar.astatus=5 then		//music=5		//zene, csak hang
+			print "music"
+		endif
+		if konyvtar.astatus=6 then		//rest=6		//pihen
+			print "pihen"
+		endif
+		if konyvtar.astatus>=7 then		//sleep=7		//alszik 
+			konyvtar.astatus=7		//ha tullep, akkor visszaallit
+			print "alszik"
+		endif
+
+
+		//homerseklet es fenyero kiirasa
+		gotoxy 37,13
+		print port.ite_konyvtar
+		print " oC"
+		gotoxy 46,13
+		print port.ilm_konyvtar
+
+
+	//halo
+		gotoxy 2,14
+		print "halo"
+		
+		//ma erteke
+		printv halo.today,12,14,1
+		if halo.today<=redday then
+			halo.today=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if halo.today>=workday then
+			halo.today=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//holnap erteke
+		printv halo.tomorrow,19,14,1
+		if halo.tomorrow<=redday then
+			halo.tomorrow=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if halo.tomorrow>=workday then
+			halo.tomorrow=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//statusz erteke
+		printv halo.astatus,26,14,1
+
+		if halo.astatus<=0 then		//0 stop
+			halo.astatus=0		//ha tullep, akkor visszaallit
+			print "stop "
+		endif
+		if halo.astatus=1 then		//1 out
+			print "tavol"
+		endif
+		if halo.astatus=2 then		//athome=2	//itthon
+			print "itthon"
+		endif
+		if halo.astatus=3 then		//awake=3	//ebred
+			print "ebred"
+		endif
+		if halo.astatus=4 then		//active=4	//aktiv	
+			print "aktiv"
+		endif
+		if halo.astatus=6 then		//rest=6	//pihen
+			print "pihen"
+		endif
+		if halo.astatus>=7 then		//sleep=7	//alszik 
+			halo.astatus=7		//ha tullep, akkor visszaallit
+			print "alszik"
+		endif
+
+
+		//homerseklet es fenyero kiirasa
+		gotoxy 37,14
+		print port.ite_halo
+		print " oC"
+		gotoxy 46,14
+		print port.ilm_halo
+
+
+	//jatszo
+		gotoxy 2,16
+		print "jatszo"
+
+		//ma erteke
+		printv jatszo.today,12,16,1
+		if jatszo.today<=redday then
+			jatszo.today=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if jatszo.today>=workday then
+			jatszo.today=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//holnap erteke
+		printv jatszo.tomorrow,19,16,1
+		if jatszo.tomorrow<=redday then
+			jatszo.tomorrow=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if jatszo.tomorrow>=workday then
+			jatszo.tomorrow=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//statusz erteke
+		printv jatszo.astatus,26,16,1
+		if jatszo.astatus<=0 then	//0 stop
+			jatszo.astatus=0	//ha tullep, akkor visszaallit
+			print "stop "
+		endif
+		if jatszo.astatus=1 then	//1 out
+			print "tavol"
+		endif
+		if jatszo.astatus=2 then	//2 awake
+			print "ebred"
+		endif
+		if jatszo.astatus=3 then	//3 athome
+			print "itthon"
+		endif
+		if jatszo.astatus>=4 then	//4 sleep 
+			jatszo.astatus=4	//ha tullep, akkor visszaallit
+			print "alszik"
+		endif
+
+		//homerseklet es fenyero kiirasa
+		gotoxy 37,16
+		print port.ite_jatszo_alvasgomb
+		print " oC"
+		gotoxy 46,16
+		print port.ilm_jatszo_alvasgomb
+	
+
+	//juli
+		gotoxy 2,17
+		print "juli"
+		//ma erteke
+		printv juli.today,12,17,1
+		if juli.today<=redday then
+			juli.today=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if juli.today>=workday then
+			juli.today=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//holnap erteke
+		printv juli.tomorrow,19,17,1
+		if juli.tomorrow<=redday then
+			juli.tomorrow=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if juli.tomorrow>=workday then
+			juli.tomorrow=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//statusz erteke
+		printv juli.astatus,26,17,1
+		if juli.astatus<=0 then		//0 stop
+			juli.astatus=0		//ha tullep, akkor visszaallit
+			print "stop "
+		endif
+		if juli.astatus=1 then		//1 out
+			print "tavol"
+		endif
+		if juli.astatus=2 then		//2 awake
+			print "ebred"
+		endif
+		if juli.astatus=3 then		//3 athome
+			print "itthon"
+		endif
+		if juli.astatus>=4 then		//4 sleep 
+			juli.astatus=4		//ha tullep, akkor visszaallit
+			print "alszik"
+		endif
+
+		//homerseklet es fenyero kiirasa
+		gotoxy 37,17
+		print port.ite_juli
+		print " oC"
+		gotoxy 46,17
+		print port.ilm_juli
+		
+
+	//marci
+		gotoxy 2,18
+		print "marci"
+
+		//ma erteke
+		printv marci.today,12,18,1
+		if marci.today<=redday then
+			marci.today=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if marci.today>=workday then
+			marci.today=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//holnap erteke
+		printv marci.tomorrow,19,18,1
+		if marci.tomorrow<=redday then
+			marci.tomorrow=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if marci.tomorrow>=workday then
+			marci.tomorrow=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//statusz erteke
+		printv marci.astatus,26,18,1
+		if marci.astatus<=0 then	//0 stop
+			marci.astatus=0		//ha tullep, akkor visszaallit
+			print "stop "
+		endif
+		if marci.astatus=1 then		//1 out
+			print "tavol"
+		endif
+		if marci.astatus=2 then		//2 awake
+			print "ebred"
+		endif
+		if marci.astatus=3 then		//3 athome
+			print "itthon"
+		endif
+		if marci.astatus>=4 then	//4 sleep 
+			marci.astatus=4		//ha tullep, akkor visszaallit
+			print "alszik"
+		endif
+
+		//homerseklet es fenyero kiirasa
+		gotoxy 37,18
+		print port.ite_marci
+		print " oC"
+		gotoxy 46,18
+		print port.ilm_marci
+
+
+	//borianni
+		gotoxy 2,19
+		print "borianni"
+
+		//ma erteke
+		printv borianni.today,12,19,1
+		if borianni.today<=redday then
+			borianni.today=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if borianni.today>=workday then
+			borianni.today=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//holnap erteke
+		printv borianni.tomorrow,19,19,1
+		if borianni.tomorrow<=redday then
+			borianni.tomorrow=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if borianni.tomorrow>=workday then
+			borianni.tomorrow=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//statusz erteke
+		printv borianni.astatus,26,19,1
+		if borianni.astatus<=0 then	//0 stop
+			borianni.astatus=0	//ha tullep, akkor visszaallit
+			print "stop "
+		endif
+		if borianni.astatus=1 then	//1 out
+			print "tavol"
+		endif
+		if borianni.astatus=2 then	//2 awake
+			print "ebred"
+		endif
+		if borianni.astatus=3 then	//3 athome
+			print "itthon"
+		endif
+		if borianni.astatus>=4 then	//4 sleep 
+			borianni.astatus=4	//ha tullep, akkor visszaallit
+			print "alszik"
+		endif
+
+		//homerseklet es fenyero kiirasa
+		gotoxy 37,19
+		print port.ite_borianni
+		print " oC"
+		gotoxy 46,19
+		print port.ilm_borianni
+
+
+	//emfurdo
+		gotoxy 2,20
+		print "emfurdo"
+
+		//statusz erteke
+		printv emfurdo.astatus,26,20,1
+		if emfurdo.astatus<=0 then	//0 stop
+			emfurdo.astatus=0	//ha tullep, akkor visszaallit
+			print "stop "
+		endif
+		if emfurdo.astatus=1 then	//1 out
+			print "tavol"
+		endif
+		if emfurdo.astatus=2 then	//2 athome
+			print "itthon"
+		endif
+		if emfurdo.astatus>=3 then	//3 sleep 
+			emfurdo.astatus=3	//ha tullep, akkor visszaallit
+			print "alszik"
+		endif
+
+		//homerseklet es fenyero kiirasa
+		gotoxy 37,20
+		print port.ite_emfurdo
+		print " oC"
+		gotoxy 46,20
+		print port.ilm_emfurdo
+
+
+	//udvar
+		gotoxy 2,22
+		print "udvar"
+
+		//ma erteke
+		printv udvar.today,12,22,1
+		if udvar.today<=redday then
+			udvar.today=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if udvar.today>=workday then
+			udvar.today=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+		//holnap erteke
+		printv udvar.tomorrow,19,22,1
+		if udvar.tomorrow<=redday then
+			udvar.tomorrow=redday	//ha tullep, akkor visszaallit
+			print "unap"
+		endif
+		if udvar.tomorrow>=workday then
+			udvar.tomorrow=workday	//ha tullep, akkor visszaallit
+			print "mnap"
+		endif
+
+
+		//statusz erteke
+		printv udvar.astatus,26,22,1
+		if udvar.astatus<=0 then	//0 stop
+			udvar.astatus=0		//ha tullep, akkor visszaallit
+			print "stop "
+		endif
+		if udvar.astatus=1 then		//1 far
+			print "tavol"
+		endif
+		if udvar.astatus=2 then		//2 bright
+			print "fenyes"
+		endif
+		if udvar.astatus=3 then		//3 music
+			print "zenes"
+		endif
+		if udvar.astatus>=4 then	//4 closed
+			udvar.astatus=4		//ha tullep, akkor visszaallit
+			print "zarva"
+		endif
+
+		//homerseklet es fenyero kiirasa
+		gotoxy 37,22
+		print port.ite_terasz
+		print " oC"
+		gotoxy 46,22
+		print port.ilm_terasz
+
+	//fogyasztasmeres
+		gotoxy 2,23
+		print "fogy:"
+		p=0
+		p=p+port.ipow_1
+		p=p+port.ipow_2
+		p=p+port.ipow_3
+		p=p+port.ipow_4
+		p=p+port.ipow_5
+		p=p+port.ipow_6
+		p=p+port.ipow_7
+		p=p+port.ipow_8
+		gotoxy 2,24
+		print p
+
+		gotoxy 11,23
+		print "fsz.v."
+		gotoxy 11,24
+		print port.ipow_1
+		print "W/"
+		p=port.icons_1/1000
+		print p
+
+		gotoxy 20,23
+		print "fsz.k."
+		gotoxy 20,24
+		print port.ipow_2
+		print "W/"
+		p=port.icons_2/1000
+		print p
+
+		gotoxy 29,23
+		print "em.v."
+		gotoxy 29,24
+		print port.ipow_3
+		print "W/"
+		p=port.icons_3/1000
+		print p
+
+		gotoxy 38,23
+		print "em.k."
+		gotoxy 38,24
+		print port.ipow_4
+		print "W/"
+		p=port.icons_4/1000
+		print p
+
+		gotoxy 47,23
+		print "mosg"
+		gotoxy 47,24
+		print port.ipow_5
+		print "W/"
+		p=port.icons_5/1000
+		print p
+
+		gotoxy 56,23
+		print "mosok"
+		gotoxy 56,24
+		print port.ipow_6
+		print "W/"
+		p=port.icons_6/1000
+		print p
+
+		gotoxy 65,23
+		print "muhely"
+		gotoxy 65,24
+		print port.ipow_7
+		print "W/"
+		p=port.icons_7/1000
+		print p
+
+		gotoxy 73,23
+		print "mcs"
+		gotoxy 73,24
+		print port.ipow_8
+		print "W/"
+		p=port.icons_8/1000
+		print p
+
+	
+	endif
+
+endprogram

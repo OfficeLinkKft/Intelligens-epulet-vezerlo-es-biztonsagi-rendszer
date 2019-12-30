@@ -1,0 +1,242 @@
+
+.loginbox {
+	width:200px;
+	height:120px;
+	margin:auto;
+	margin-top:5px;
+	padding:5px;
+	padding-right:20px;
+	border:8px;
+	border-radius:4px;
+	text-align:left;
+}
+
+.login {
+	float:right;
+	background-color:lightGreen;
+	width:80px;
+	height:16px;
+	margin-left:2px;
+	margin-right:14px;
+	margin-top:5px;
+	padding: 7px 5px 3px 5px;
+	border:8px;
+	border-radius:4px;
+	box-shadow: 4px 4px 4px #444444;
+	font-size:11px;
+	font-weight:bold;
+	text-align:center;
+}
+.swm {
+	float:right;
+	background-color:#eee;
+	width:32px;
+	height:16px;
+	margin-right:14px;
+	margin-top:5px;
+	padding:5px;
+	padding-top:4px;
+	border:8px;
+	border-radius:4px;
+	box-shadow: 4px 4px 4px #444444;
+	font-size:11px;
+	font-weight:bold;
+	text-align:center;
+}
+.sw {
+	float:left;
+	background-color:#eee;
+	width:32px;
+	height:16px;
+	margin-left:10px;
+	margin-right:12px;
+	margin-top:5px;
+	padding:5px;
+	padding-top:4px;
+	border:8px;
+	border-radius:4px;
+	box-shadow: 4px 4px 4px #444444;
+	font-size:11px;
+	font-weight:bold;
+	text-align:center;
+}
+.sw0 {
+	float:left;
+	height:16px;
+	background-color:#eee;
+	margin-left:18px;
+	margin-top:5px;
+	padding:5px;
+	border:8px;
+	border-radius:4px;
+	box-shadow: 4px 4px 4px #444444;
+}
+.sw1 {
+	float:left;
+	height:16px;
+	background-color:#cccccc;
+	margin-left:18px;
+	margin-top:7px;
+	padding:5px;
+	border:8px;
+	border-radius:4px;
+	box-shadow: 2px 2px 2px #888888;
+}
+.swsp {
+	float:left;
+	height:16px;
+	width:15px;
+}
+
+
+
+.list {
+	margin-top:28px;
+	padding:8px;
+	color: #555555;
+}
+.client {
+	margin:auto;
+	clear:both;
+}
+.host {
+	float:left;
+	margin-left:0px;
+	margin-bottom:3px;
+	width:36px;
+	height:16px;
+	border:5px;
+	border-radius:3px;
+	padding-top:3px;
+	padding-bottom:1px;
+	padding-left:5px;
+}
+.type {
+	float:left;
+	margin-left:5px;
+	margin-bottom:3px;
+	width:30px;
+	height:16px;
+	border:5px;
+	border-radius:3px;
+	padding-top:3px;
+	padding-bottom:1px;
+	padding-left:5px;
+}
+.id {
+	float:left;
+	margin-left:5px;
+	margin-bottom:3px;
+	width:50px;
+	height:16px;
+	border:5px;
+	border-radius:3px;
+	padding:2px;
+	padding-left:8px;
+}
+.name {
+	float:left;
+	margin-left:5px;
+	margin-bottom:3px;
+	width:335px;
+	height:16px;
+	border:5px;
+	border-radius:3px;
+	padding:2px;
+	padding-left:8px;
+}
+.pathsource {
+	float:left;
+	margin-left:5px;
+	margin-bottom:3px;
+	width:70px;
+	height:16px;
+	border:5px;
+	border-radius:3px;
+	padding:2px;
+	padding-left:8px;
+}
+.pathdest {
+	float:left;
+	margin-left:5px;
+	margin-bottom:3px;
+	width:70px;
+	height:16px;
+	border:5px;
+	border-radius:3px;
+	padding:2px;
+	padding-left:8px;
+}
+.lastrun {
+	float:left;
+	margin-left:10px;
+	margin-bottom:3px;
+	width:120px;
+	height:16px;
+	border:5px;
+	border-radius:3px;
+	padding:2px;
+	padding-left:11px;
+	text-align:left;
+}
+.result {
+	float:left;
+	margin-left:5px;
+	margin-bottom:3px;
+	width:60px;
+	height:16px;
+	border:5px;
+	border-radius:3px;
+	padding:2px;
+	padding-right:8px;
+	text-align:right;
+}
+.runtime {
+	float:left;
+	margin-left:10px;
+	margin-bottom:3px;
+	width:60px;
+	height:16px;
+	border:5px;
+	border-radius:3px;
+	padding:2px;
+	padding-right:8px;
+	text-align:right;
+}
+.dsheet {
+	float:right;
+	margin-left:5px;
+	margin-bottom:2px;
+	width:30px;
+	height:16px;
+	border:5px;
+	border-radius:3px;
+	padding-top:4px;
+	text-align:center;
+}
+
+.pix {
+	margin:auto;
+	clear:both;	
+}
+.thumbnail
+{
+	float:left;
+	margin:5px;
+}
+
+
+
+
+.stsl {
+	width:1240px;
+	height:32px;
+	margin:auto;
+	padding:5px;
+	font-size:11px;
+	font-weight:bold;
+	color:#222;
+	clear:both;	
+}
+
+

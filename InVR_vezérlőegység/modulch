@@ -1,0 +1,17 @@
+//InVR system 1.0
+//a rendszerben levo modul csere dokumentálás
+
+//minták
+//30,2=123,255		// ezis
+//123,255=55,66		// megint csere
+
+110,29=110,8	//sens m
+30,39=30,78	//vikt
+90,17=90,42	//szole
+
+//cserék
+//30,9=30,55	//nappali etkezo	
+//30,8=30,47	//nappali
+//30,18=30,51	//lepcso
+
+

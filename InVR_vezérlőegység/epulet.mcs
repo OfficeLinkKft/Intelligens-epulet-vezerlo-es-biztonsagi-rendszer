@@ -1,0 +1,619 @@
+progname epulet		// epulet es kornyezet statuszai, futes, melegviz vezerlese  
+
+//megallapitja az evszakot es a kulso vilagossagot a lakok szempontjabol,
+//az eredmenyt statuszokban rogziti.
+
+//statuszokat es azok ertekeit lasd a definicioknal
+
+//meghatarozza az epulet statuszait
+
+//vezerles: riaszto, epulet zaras-nyitas, futes, melegviz
+
+
+
+
+
+variables
+// evszak statusza europai naptar szerint
+	int season g			
+
+// napfeny statusza
+	int sun g	
+
+	int sunlite=51		//mert napfeny
+	int sunlitemin=0		//szelsoertek
+	int sunlitemax=1023		//holdfeny also hatarerteke
+	int sunlite_moon=10		//holdfeny also hatarerteke
+	int sunlite_bright=30		//nappali vilagos also hatarerteke
+	int sunlite_sun=1000 		//napsutes also hatarerteke
+
+//napok es statuszaik 
+	int today 		//mai nap statusza	
+	int tomorrow 		//holnap nap statusza
+
+//statuszok
+	int astatus=2 g s	//aktualis statusz, alapallapot tavol
+
+				//stop	0				vezerles all
+				//far	1				tavol
+				//athome	2			itthon (nyitva)
+				//closed	3			zarva
+	
+	int rhour_3closed=24 			//mai zaras ido oraja, holnap munkanap, 24=nincs
+	int rminut_3closed=0 			//perce
+	int rhour_31closed_weekend=24 		//mai zaras ido oraja, holnap hetvege, 24=nincs
+	int rminut_31closed_weekend=0 		//perce
+					//mindenki pihen vagy alszik			
+
+
+
+//melegviz
+	int rtehist_bojler=10		//bojler kert ertekek kozotti kulonbseg
+
+	int rtemax_1bojler_also=60	//1. bojler also homero kert ertek kikapcsolashoz
+	int rtemin_1bojler_also=50	//1. bojler also homero kert ertek bekapcsolashoz
+	int ltemin_1bojler_also=5	//1. bojler also homero kert ertek also limit
+	int ltemax_1bojler_also=79	//1. bojler also homero kert ertek felso limit
+	int rte_1bojler_also_1=50	//statuszokhoz tartozo kert homersekelti ertekek, tavol
+	int rte_1bojler_also_2=60	//itthon
+	int rte_1bojler_also_3=60	//zarva
+
+	int rtemin_2bojler_also=50	//2. bojler also homero kert ertek bekapcsolashoz
+	int rtemax_2bojler_also=60	//2. bojler also homero kert ertek kikapcsolashoz
+	int ltemin_2bojler_also=5	//2. bojler also homero kert ertek also limit
+	int ltemax_2bojler_also=79	//2. bojler also homero kert ertek felso limit
+	int rte_2bojler_also_1=50	//statuszokhoz tartozo kert homersekelti ertekek, tavol
+	int rte_2bojler_also_2=60	//itthon
+	int rte_2bojler_also_3=60	//zarva
+
+	flo ominut_melegviz=10		//melegviz futesi ciklus
+
+	flo ihour_1bojler_nappaliaram=0		//1. bojler nappali aram uzemora
+	flo ihour_1bojler_ejszakaiaram=0	//1. bojler ejszakai aram uzemora
+	flo ihour_2bojler_nappaliaram=0		//2. bojler nappali aram uzemora
+	flo ihour_2bojler_ejszakaiaram=0	//2. bojler ejszakai aram uzemora
+
+
+//futes
+	int rte_1kazan_eloremenoviz		//1. kazan eloremeno viz homerseklet kert ertek
+	int ltemin_1kazan_eloremenoviz=5	//1. kazan eloremeno viz homerseklet also limit
+	int ltemax_1kazan_eloremenoviz=90	//1. kazan eloremeno viz homerseklet felso limit
+	int rte_1kazan_visszateroviz		//1. kazan visszatero viz homerseklet kert ertek
+	int ltemin_1kazan_visszateroviz=5	//1. kazan visszatero viz homerseklet also limit
+	int ltemax_1kazan_visszateroviz=90	//1. kazan visszatero viz homerseklet felso limit
+
+	int rte_2kazan_eloremenoviz		//2. kazan eloremeno viz homerseklet kert ertek
+	int ltemin_2kazan_eloremenoviz=5	//2. kazan eloremeno viz homerseklet also limit
+	int ltemax_2kazan_eloremenoviz=90	//2. kazan eloremeno viz homerseklet felso limit
+	int rte_2kazan_visszateroviz		//2. kazan visszatero viz homerseklet kert ertek
+	int ltemin_2kazan_visszateroviz=5	//2. kazan visszatero viz homerseklet also limit
+	int ltemax_2kazan_visszateroviz=90	//2. kazan visszatero viz homerseklet felso limit
+
+
+	flo ominut_futesvezerles=15		//futes vezerlesi ciklus ideje
+	
+	flo ihour_1kazan=0			//1. kazan uzemora
+	flo ihour_2kazan=0			//2. kazan uzemora
+
+
+
+
+//segedvaltozok
+	int c1=0		//segedvaltozo, inditaskor 0, aztan 1
+	int c2=0		//segedvaltozo, inditaskor 0, aztan 1
+	int c3=0		//segedvaltozo, inditaskor 0, aztan 1
+	
+	int a1=0		//status segedvaltozo
+
+	flo c10=0		//melegviz ciklus szamlalo segedvaltozo
+	flo c11=0		//futes ciklus szamlalo segedvaltozo
+
+	flo d1=0		//segedvaltozo melegvizhez
+	flo d2=0		//segedvaltozo futeshez
+
+	int a			//regi homero kompenzalas segedvaltozo
+
+	str s1			//szöveg segedvaltozo homerseklet kiirasara KIJMK-re
+	str s11
+	str s12
+
+	str s2
+	str s21
+	str s22
+
+
+endvariables
+
+
+
+
+
+defines	
+	//season - evszak statusza
+	spring=1
+	summer=2
+	fall=3
+	winter=4
+
+	//sun - napfeny statusza
+	night=1		//ejszaka
+	moon=2		//holdfeny
+	bright=3	//vilagos	
+	sunshine=4	//sut a nap
+
+	//napok statuszai
+	workday=1		//munkanap
+	redday=0		//unnepnap, itthoni nap
+
+	//statuszok
+	stop=0			//vezerles all
+	far=1			//tavol
+	athome=2		//itthon (nyitva)
+	closed=3		//zarva
+
+
+enddefines
+
+program
+
+//evszak statuszanak megallapitasa
+	// evszak statusz megallapitasa programindulaskor
+	if c1=0 then
+		c1=1
+		season=winter			//tel van	
+		if s.month>=3 then		//marcius 1. utan
+				season=spring	//tavasz van
+		endif
+		if s.month>=6 then		//j£nius 1. utan
+				season=summer	//nyar van
+		endif
+		if s.month>=9 then		//szeptember 1. utan
+				season=fall	//osz van
+		endif
+		if s.month>=12 then		//december 1. utan
+				season=winter	//tel van
+		endif
+	endif
+	// evszak statusz megallapitasa minden nap delben
+	if s.hour=12 then
+	if s.min=0 then
+		season=winter			//tel van	
+		if s.month>=3 then		//marcius 1 utan
+				season=spring	//tavasz van
+		endif
+		if s.month>=6 then		//junius 1 utan
+				season=summer	//nyar van
+		endif
+		if s.month>=9 then		//szeptember 1 utan
+				season=fall	//osz van
+		endif
+		if s.month>=12 then		//december 1 utan
+				season=winter	//tel van
+		endif
+	endif
+	endif
+
+
+// napsutes statuszanak megallapitasa percenkent
+	if s.sect=1 then
+		sunlite=port.ilm_terasz		//sunlite erteke a terasz TIV fenymero erteke
+
+		sun=night			//ejszaka van
+		if sunlite>=sunlite_moon then
+			sun=moon		//legalabb holdfeny van
+		endif
+		if sunlite>=sunlite_bright then
+			sun=bright		//legalabb vilagos van
+		endif
+		if sunlite>=sunlite_sun then
+			sun=sunshine		//sut a nap
+		endif
+	endif
+
+
+//nap statusza megallapitasa
+	// nap statuszanak megallapitasa programinditaskor
+	if c2=0 then
+		c2=1
+		today=workday
+		tomorrow=workday
+		if s.dofw=4 then		//ma pentek van
+			tomorrow=redday	
+		endif
+		if s.dofw=5 then		//ma szombat van
+			today=redday
+			tomorrow=redday	
+		endif
+		if s.dofw=6 then		//ma vasarnap van
+			today=redday
+		endif
+	endif
+	// nap statuszanak megallapitasa napi rendszeresseggel
+	if s.hour=0 then
+	if s.min=0 then			//ez naponta 0:00-kor vizsgalja
+		today=workday
+		tomorrow=workday
+		if s.dofw=4 then		//ma pentek van
+			tomorrow=redday	
+		endif
+		if s.dofw=5 then		//ma szombat van
+			today=redday
+			tomorrow=redday	
+		endif
+		if s.dofw=6 then		//ma vasarnap van
+			today=redday
+		endif
+	endif				
+	endif
+
+
+//statusz megallapitasa idopontok szerint
+	//percenkent vizsgal, 
+	//tehat gombnyomasos statuszvaltas eseten
+	//a kovetkezo statuszidopontig 
+	//valtozatlan marad
+	
+	if s.mint=1 then			//percenkent egyszer vizsgal
+
+	
+		//holnap munkanap lesz, ezert zaras munkanap szerint
+		if tomorrow=workday then
+
+			//1 zaras
+			if rhour_3closed!=24 then		//ha az ora 24, nem vizsgal
+			if s.hour=rhour_3closed then		//zaras munkanap oraja
+			if s.min=rminut_3closed then		//perce
+				astatus=closed
+			endif
+			endif
+			endif	
+		endif
+
+		//holnap hetvege lesz, ezert zaras unnepnap szerint
+		if tomorrow=redday then
+
+			//1 zaras
+			if rhour_31closed_weekend!=24 then		//ha az ora 24, nem vizsgal
+			if s.hour=rhour_31closed_weekend then		//zaras unnepnap oraja
+			if s.min=rminut_31closed_weekend then		//perce
+				astatus=closed
+			endif
+			endif
+			endif	
+		endif
+
+	endif
+
+//statusz megallapitasa nyomogombok es mas statuszok szerint, 
+	if s.sect=1 then
+
+	//belepteto tavozas gomb
+		//ha nincs tavol, tavozik
+		if astatus!=far then
+		if port.isw_belepteto!=0 then	//a belepteto gomb megnyomva
+			astatus=far		//mindenki tavozott
+			port.osw_belepteto=0	//port nullazas
+		endif
+		endif
+
+		//ha tavol volt, itthon lesz
+		if astatus=far then
+		if port.isw_belepteto!=0 then	//a belepteto gomb megnyomva
+			astatus=athome		//status itthon
+			port.osw_belepteto=0	//port nullazas
+		endif
+		endif
+
+	//epuletzaras gomb
+		//ha nincs zarva, zarva lesz
+		if astatus!=closed then
+		if port.isw_epuletzaras!=0 then	//a belepteto gomb megnyomva
+			astatus=closed		//mindenki tavozott
+			port.isw_belepteto=0	//port nullazas
+		endif
+		endif
+
+		//ha zarva, itthon lesz lesz
+		if astatus=closed then
+		if port.isw_epuletzaras!=0 then	//a belepteto gomb megnyomva
+			astatus=athome		//mindenki tavozott
+			port.isw_belepteto=0	//port nullazas
+		endif
+		endif
+
+
+
+	endif	//masodperc ciklus vege
+
+
+
+
+
+//kert ertekek beallitasa statuszvaltaskor
+	if s.sect=1 then			//masodpercenkent vizsgalva
+	if a1!=astatus then			//ha valtozott a statusz
+
+	//tavol eseten, 1far
+		if astatus=far then
+			rtemax_1bojler_also=rte_1bojler_also_1			//1. bojler kert homerseklet
+			rtemin_1bojler_also=rtemax_1bojler_also-rtehist_bojler	//1. bojler kert homerseklet
+			rtemax_2bojler_also=rte_2bojler_also_1			//2. bojler kert homerseklet	
+			rtemin_2bojler_also=rtemax_2bojler_also-rtehist_bojler	//2. bojler kert homerseklet
+		endif
+
+	//itthon eseten, 2athome
+		if astatus=athome then
+			rtemax_1bojler_also=rte_1bojler_also_2			//1. bojler kert homerseklet
+			rtemin_1bojler_also=rtemax_1bojler_also-rtehist_bojler	//1. bojler kert homerseklet
+			rtemax_2bojler_also=rte_2bojler_also_2			//2. bojler kert homerseklet	
+			rtemin_2bojler_also=rtemax_2bojler_also-rtehist_bojler	//2. bojler kert homerseklet
+		endif
+
+	//zarva eseten, 3closed
+		if astatus=closed then
+			rtemax_1bojler_also=rte_1bojler_also_3			//1. bojler kert homerseklet
+			rtemin_1bojler_also=rtemax_1bojler_also-rtehist_bojler	//1. bojler kert homerseklet
+			rtemax_2bojler_also=rte_2bojler_also_3			//2. bojler kert homerseklet	
+			rtemin_2bojler_also=rtemax_2bojler_also-rtehist_bojler	//2. bojler kert homerseklet
+		endif
+	
+	endif
+
+	a1=astatus				//segedvaltozo beallitasa
+	endif
+
+
+/////////////////////riasztasok//////////////////////////////////////////////////////
+
+//nincs halozati feszultseg
+
+	//nincs nappali aram
+	if port.ipo_nappaliaram=0 then 		//nappali aram meglete
+
+	endif
+	
+	//nincs ejszakai aram
+	if port.ipo_ejszakaiaram=0 then 	//ejszakai aram meglete
+
+	endif
+
+//nincs gaz
+
+//nincs viz
+
+//nincs telefon
+
+//nincs internet
+
+
+
+
+/////////////////////vezerlesek/////////////////////////////////////////////////////////
+
+
+// melegviz
+	//bojler vezerles a homerseklet fuggvenyeben, 10 percenkent vizsgalva
+	if s.mint=1 then
+	if c10=ominut_melegviz then		
+
+	//ha van ejszakai aram, futes ejszakai arammal		
+	if port.ipo_ejszakaiaram=1 then
+		
+		//1. bojler
+		a=port.ite_1bojler_also					// homero kompenzalasa
+		
+		//ha lehult a bojler
+		if a<rtemin_1bojler_also then
+
+			port.osw_1bojler_nappaliaram=0			//nappali aramot kapcsold ki
+			port.osw_1bojler_ejszakaiaram=1			//bojlert kapcsold be
+
+			d1=ihour_1bojler_ejszakaiaram*60		//eddigi bojler uzemora percben
+			d1=d1+ominut_melegviz				//bojler uzemora szamlalo percben novelese
+			ihour_1bojler_ejszakaiaram=d1/60		//uzemperc visszeszamolasa oraba
+
+		endif
+
+		//ha elerte a kikapcsolasi homersekletet
+		if a>rtemax_1bojler_also then
+
+			port.osw_1bojler_ejszakaiaram=0			//bojlert kapcsold ki
+		endif
+
+		//2. bojler
+		a=port.ite_2bojler_also					//homero kompenzalasa
+		
+		//ha lehult a bojler
+		if a<rtemin_2bojler_also then
+
+			port.osw_2bojler_nappaliaram=0			//nappali aramot kapcsold ki
+			port.osw_2bojler_ejszakaiaram=1			//bojlert kapcsold be
+
+			d1=ihour_2bojler_ejszakaiaram*60		//eddigi bojler uzemora percben
+			d1=d1+ominut_melegviz				//bojler uzemora szamlalo percben novelese
+			ihour_2bojler_ejszakaiaram=d1/60		//uzemperc visszeszamolasa oraba
+		endif
+
+		//ha elerte a kikapcsolasi homersekletet
+		if a>rtemax_2bojler_also then
+
+			port.osw_2bojler_ejszakaiaram=0			//bojlert kapcsold ki
+		endif
+
+	//ha nincs ejszakai aram, futes nappalival
+	else
+		//1. bojler
+		a=port.ite_1bojler_also					//homero kompenzalasa
+		
+		//ha lehult a bojler
+		if a<rtemin_1bojler_also then
+
+			port.osw_1bojler_ejszakaiaram=0			//ejszakai aramot kapcsold ki
+			port.osw_1bojler_nappaliaram=1			//bojlert kapcsold be
+
+			d1=ihour_1bojler_nappaliaram*60			//eddigi bojler uzemora percben
+			d1=d1+ominut_melegviz				//bojler uzemora szamlalo percben novelese
+			ihour_1bojler_nappaliaram=d1/60			//uzemperc visszeszamolasa oraba
+		endif
+
+		//ha elerte a kikapcsolasi homersekletet
+		if a>rtemax_1bojler_also then
+
+			port.osw_1bojler_nappaliaram=0			//bojlert kapcsold ki
+		endif
+
+		//2. bojler
+		a=port.ite_2bojler_also					//homero kompenzalasa
+		
+		//ha lehult a bojler
+		if a<rtemin_2bojler_also then
+
+			port.osw_2bojler_ejszakaiaram=0			//ejszakai aramot kapcsold ki
+			port.osw_2bojler_nappaliaram=1			//bojlert kapcsold be
+
+			d1=ihour_2bojler_nappaliaram*60			//eddigi bojler uzemora percben
+			d1=d1+ominut_melegviz				//bojler uzemora szamlalo percben novelese
+			ihour_2bojler_nappaliaram=d1/60			//uzemperc visszeszamolasa oraba
+		endif
+
+		//ha elerte a kikapcsolasi homersekletet
+		if a>rtemax_2bojler_also then
+
+			port.osw_2bojler_nappaliaram=0			//bojlert kapcsold ki
+		endif
+
+
+	endif
+
+
+	//fagyvedelem, 6 oC
+		//1. bojler
+		a=port.ite_1bojler_also					//homero kompenzalasa
+		if a<6 then						//ha 6 oC-nal hidegebb a bojlerben a viz
+
+			port.osw_1bojler_ejszakaiaram=0			//ejszakai aramot kapcsold ki
+			port.osw_1bojler_nappaliaram=1			//bojlert kapcsold be
+
+			d1=ihour_1bojler_nappaliaram*60			//eddigi bojler uzemora percben
+			d1=d1+ominut_melegviz				//bojler uzemora szamlalo percben novelese
+			ihour_1bojler_nappaliaram=d1/60			//uzemperc visszeszamolasa oraba
+		endif
+
+		//2. bojler
+		a=port.ite_2bojler_also					//homero kompenzalasa
+		if a<6 then						//ha 6 oC-nal hidegebb a bojlerben a viz
+
+			port.osw_2bojler_ejszakaiaram=0			//ejszakai aramot kapcsold ki
+			port.osw_2bojler_nappaliaram=1			//bojlert kapcsold be
+
+			d1=ihour_2bojler_nappaliaram*60			//eddigi bojler uzemora percben
+			d1=d1+ominut_melegviz				//bojler uzemora szamlalo percben novelese
+			ihour_2bojler_nappaliaram=d1/60			//uzemperc visszeszamolasa oraba
+		endif
+
+	
+	//perc segedvaltozo nullazasa
+		c10=0
+	
+	endif
+	c10=c10+1	//perc segedvaltozo novelese	
+
+	endif
+
+
+//futes
+
+		//port.ihour_1kazan=0 g				//1. kazan uzemora
+		//port.ihour_2kazan=0 g				//2. kazan uzemora
+
+	//int ite_1kazan_visszateroviz m iar 71,5,1,100 g	//1. kazan visszatero viz homerseklet
+	//int ite_1kazan_eloremenoviz m iar 71,5,2,100 g	//1. kazan eloremeno viz homerseklet
+//	int ite_2kazan_visszateroviz m iar 71,5,3,100 g	//2. kazan visszatero viz homerseklet
+//	int ite_2kazan_eloremenoviz m iar 71,5,4,100 g	//2. kazan eloremeno viz homerseklet
+
+
+	//kazan
+//	int ltemin_1kazan_visszateroviz=5 g		//1. kazan visszatero viz homerseklet also limit
+//	int ltemax_1kazan_visszateroviz=90 g		//1. kazan visszatero viz homerseklet felso limit
+//	int ltemin_1kazan_eloremenoviz=5 g		//1. kazan eloremeno viz homerseklet also limit
+//	int ltemax_1kazan_eloremenoviz=90 g		//1. kazan eloremeno viz homerseklet felso limit
+//	int ltemin_2kazan_visszateroviz=5 g		//2. kazan visszatero viz homerseklet also limit
+//	int ltemax_2kazan_visszateroviz=90 g		//2. kazan visszatero viz homerseklet felso limit
+//	int ltemin_2kazan_eloremenoviz=5 g		//2. kazan eloremeno viz homerseklet also limit
+//	int ltemax_2kazan_eloremenoviz=90 g		//2. kazan eloremeno viz homerseklet felso limit
+
+
+	//vezerles ciklusvaltozo szerint
+
+	if s.mint=1 then				
+	if c11=ominut_futesvezerles then
+
+	//a=port.ite_1kazan_visszateroviz-20	//regi homero kompenzalas
+	//a=port.ite_1kazan_eloremenoviz-20	//regi homero kompenzalas
+
+	//a=port.ite_2kazan_visszateroviz-20	//regi homero kompenzalas
+	//a=port.ite_2kazan_eloremenoviz-20	//regi homero kompenzalas
+
+
+	//futoviz a kulso homerseklet fuggvenyeben
+	
+
+	//napsutes kompenzalas
+
+
+	//alap termosztat a nappaliban
+		if port.ite_nappali<port.rte_nappali then	//ha a lehult a nappali
+
+			d2=ihour_1kazan*60			//eddigi kazan uzemora percben
+			d2=d2+ominut_futesvezerles		//bojler uzemora szamlalo percben novelese
+			ihour_1kazan=d2/60			//uzemperc visszeszamolasa oraba
+
+			port.osw_1kazan=1			//futest bekapcsolni
+		else						//egyebkent
+			port.osw_1kazan=0			//futest kikapcsolni
+		endif
+
+
+	//kompenzalas a terek futesigenyevel
+
+
+	//fagyvedelem 
+
+
+	//perc segedvaltozo nullazasa
+		c11=0
+
+	endif
+	c11=c11+1			//perc segedvaltozo novelese	
+
+	endif				//perc ciklus lezarasa
+
+//kijelzok kezelese percenkent
+
+	if s.mint=1 then	
+		
+	//mosokonyha kijelzo
+
+		//elso sor: gázbojler kilépo homerseklet / melegviz cirkuláció visszatérõ hómérséklet
+		ntostr port.ite_melegviz,s11
+		s1="Mv:"+s11
+		s1=s1+"/"
+		ntostr port.ite_melegviz_vissza,s11
+		s1=s1+s11
+		s1=s1+"oC"
+		port.odpk1_mosokonyha=s1
+
+		//masodik sor: mosókonyha pill fogyasztás	
+		ntostr port.ipow_6,s21
+		s2=s21+"W "
+		a=port.oli_melegviz_keringeto*100
+		a=a/80
+		ntostr a,s21
+		s2=s2+s21
+		s2=s2+"%"
+		port.odpk2_mosokonyha=s2
+			
+	endif	
+
+
+endprogram
